@@ -94,6 +94,17 @@
           class="nav-button"
           mat-menu-item
           (click)="sidenav.toggle()"
+          routerLink="/pages/pedidos"
+          routerLinkActive="active"
+        >
+          <mat-icon>list_alt</mat-icon>
+          <span>Pedidos</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
           routerLink="/pages/ordenes"
           routerLinkActive="active"
         >
