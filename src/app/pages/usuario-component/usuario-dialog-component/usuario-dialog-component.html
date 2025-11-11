@@ -1,0 +1,34 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+    <span>{{ usuario.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</span>
+  </mat-toolbar>
+
+  <div class="example-container">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre</mat-label>
+      <input matInput [(ngModel)]="usuario.nombre" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Correo</mat-label>
+      <input matInput type="email" [(ngModel)]="usuario.correo" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" [(ngModel)]="usuario.contrasena" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Rol</mat-label>
+      <mat-select [(ngModel)]="usuario.rol">
+        <mat-option *ngFor="let r of roles" [value]="r">{{ r.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <button mat-button color="primary" (click)="operate()">Guardar</button>
+      <button mat-button color="warn" (click)="close()">Cancelar</button>
+    </div>
+  </div>
+</mat-dialog-content>

@@ -1,11 +1,9 @@
-import { Cliente } from "./cliente";
 import { Rol } from "./rol";
 
 export class Usuario{
-    idUsuario: number;
-    contraseña: string;
-    correo: string;
+    id: number;
     nombre: string;
-    cliente: Cliente;
+    correo: string;
+    contrasena: string;
     rol: Rol;    
 }

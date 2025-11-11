@@ -16,6 +16,7 @@ import { MatOptionModule } from '@angular/material/core';
 
 
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatPaginatorModule,
     MatSortModule,
     MatSelectModule,  
-    MatOptionModule,    
+    MatOptionModule,   
+    MatCardModule, 
 
 
     MatDialogModule,
