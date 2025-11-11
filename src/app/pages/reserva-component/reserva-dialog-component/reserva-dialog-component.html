@@ -1,0 +1,51 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+    <span>{{ reserva.id ? 'Editar Reserva' : 'Nueva Reserva' }}</span>
+  </mat-toolbar>
+
+  <div class="example-container">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Cliente</mat-label>
+      <mat-select [(ngModel)]="reserva.cliente" [compareWith]="compareCliente">
+        <mat-option *ngFor="let c of clientes" [value]="c">{{ c.usuario.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Mesa</mat-label>
+      <mat-select [(ngModel)]="reserva.mesa" [compareWith]="compareMesa">
+        <mat-option *ngFor="let m of mesas" [value]="m">Mesa {{ m.numero }} - {{ m.ubicacion }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Fecha y Hora</mat-label>
+      <input matInput type="datetime-local" [(ngModel)]="fechaHoraLocal" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Número de Personas</mat-label>
+      <input matInput type="number" [(ngModel)]="reserva.numeroPersonas" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Estado</mat-label>
+      <mat-select [(ngModel)]="reserva.estado">
+        <mat-option value="Pendiente">Pendiente</mat-option>
+        <mat-option value="Confirmada">Confirmada</mat-option>
+        <mat-option value="Cancelada">Cancelada</mat-option>
+        <mat-option value="Completada">Completada</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput [(ngModel)]="reserva.observaciones" rows="3"></textarea>
+    </mat-form-field>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <button mat-button color="primary" (click)="operate()">Guardar</button>
+      <button mat-button color="warn" (click)="close()">Cancelar</button>
+    </div>
+  </div>
+</mat-dialog-content>

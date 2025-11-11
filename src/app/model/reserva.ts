@@ -2,7 +2,7 @@ import { Cliente } from "./cliente";
 import { Mesa } from "./mesa";
 
 export class Reserva{
-    idReseva: number;
+    id: number;
     estado: string;
     fechaHora: Date;
     cliente: Cliente;

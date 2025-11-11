@@ -1,5 +1,5 @@
 export class Mesa{
-    idMesa: number;
+    id: number;
     estado: string;
     numero: number;
     ubicacion: string;
