@@ -1,0 +1,170 @@
+<div class="example-container">
+  <mat-toolbar class="example-toolbar">
+    <button mat-icon-button (click)="sidenav.toggle()" aria-label="Toggle menu">
+      @if (!sidenav.opened) {
+      <mat-icon>menu</mat-icon>
+      }@else {
+      <mat-icon>close</mat-icon>
+      }
+    </button>
+
+    <mat-icon class="toolbar-icon">restaurant</mat-icon>
+    <span class="toolbar-title">RESTAURANT</span>
+
+    <span class="example-spacer"></span>
+
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More options">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item>
+        <mat-icon>account_box</mat-icon>
+        <span>Mi cuenta</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="example-sidenav-container">
+    <mat-sidenav #sidenav class="sidenav" mode="push">
+      <div class="sidenav-header">
+        <img src="constructora.png" alt="Restaurant Logo" class="logo" />
+        <h3 class="company-name">Mi Restaurante</h3>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <nav class="sidenav-nav">
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/search"
+          routerLinkActive="active"
+        >
+          <mat-icon>search</mat-icon>
+          <span>Buscar</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/roles"
+          routerLinkActive="active"
+        >
+          <mat-icon>admin_panel_settings</mat-icon>
+          <span>Roles</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/usuarios"
+          routerLinkActive="active"
+        >
+          <mat-icon>people</mat-icon>
+          <span>Usuarios</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/clientes"
+          routerLinkActive="active"
+        >
+          <mat-icon>person</mat-icon>
+          <span>Clientes</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/menu"
+          routerLinkActive="active"
+        >
+          <mat-icon>restaurant_menu</mat-icon>
+          <span>Menú</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/pedidos"
+          routerLinkActive="active"
+        >
+          <mat-icon>list_alt</mat-icon>
+          <span>Pedidos</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/ordenes"
+          routerLinkActive="active"
+        >
+          <mat-icon>receipt_long</mat-icon>
+          <span>Órdenes</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/mesas"
+          routerLinkActive="active"
+        >
+          <mat-icon>table_restaurant</mat-icon>
+          <span>Mesas</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/inventario"
+          routerLinkActive="active"
+        >
+          <mat-icon>inventory</mat-icon>
+          <span>Inventario</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/reservas"
+          routerLinkActive="active"
+        >
+          <mat-icon>badge</mat-icon>
+          <span>Reservas</span>
+        </button>
+
+        <button
+          class="nav-button"
+          mat-menu-item
+          (click)="sidenav.toggle()"
+          routerLink="/pages/reportes"
+          routerLinkActive="active"
+        >
+          <mat-icon>assessment</mat-icon>
+          <span>Reportes</span>
+        </button>
+      </nav>
+
+      <div class="sidenav-footer">
+        <mat-divider></mat-divider>
+        <p class="version-text">Versión 1.0.0</p>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="main-content">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

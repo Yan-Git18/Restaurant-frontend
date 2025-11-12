@@ -1,0 +1,31 @@
+<mat-dialog-content>
+  <mat-toolbar color="primary">
+    <span>{{ cliente.id ? 'Editar Cliente' : 'Nuevo Cliente' }}</span>
+  </mat-toolbar>
+
+  <div class="example-container">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Teléfono</mat-label>
+      <input matInput [(ngModel)]="cliente.telefono" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Dirección</mat-label>
+      <input matInput [(ngModel)]="cliente.direccion" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Usuario</mat-label>
+      <mat-select [(ngModel)]="cliente.usuario">
+        <mat-option *ngFor="let u of usuarios" [value]="u">
+          {{ u.nombre }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="flex justify-end gap-2 mt-4">
+      <button mat-button color="primary" (click)="operate()">Guardar</button>
+      <button mat-button color="warn" (click)="close()">Cancelar</button>
+    </div>
+  </div>
+</mat-dialog-content>
