@@ -1,5 +1,5 @@
 export class Inventario{
-    idInventario: number;
+    id: number;
     nombre: string;
     stock: number;
     unidadMedida: string;

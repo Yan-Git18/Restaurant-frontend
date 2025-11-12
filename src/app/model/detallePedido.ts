@@ -2,7 +2,7 @@ import { Pedido } from "./pedido";
 import { Producto } from "./producto";
 
 export class DetallePedido{
-    idDetallePedido: number;
+    id: number;
     cantidad: number;
     subtotal: number;
     pedido: Pedido;

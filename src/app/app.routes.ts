@@ -5,6 +5,7 @@ import { RolComponent } from './pages/rol-component/rol-component';
 import { MesaComponent } from './pages/mesa-component/mesa-component';
 import { ReservaComponent } from './pages/reserva-component/reserva-component';
 import { PedidoComponent } from './pages/pedido-component/pedido-component';
+import { CategoriaComponent } from './pages/categoria-component/categoria-component';
 
 export const routes: Routes = [
     
@@ -14,4 +15,5 @@ export const routes: Routes = [
     { path: 'pages/mesas', component: MesaComponent },
     { path: 'pages/reservas', component: ReservaComponent },
     { path: 'pages/pedidos', component: PedidoComponent },
+    { path: 'pages/categorias', component: CategoriaComponent },
 ];

@@ -105,11 +105,11 @@
           class="nav-button"
           mat-menu-item
           (click)="sidenav.toggle()"
-          routerLink="/pages/ordenes"
+          routerLink="/pages/categorias"
           routerLinkActive="active"
         >
           <mat-icon>receipt_long</mat-icon>
-          <span>Órdenes</span>
+          <span>Categorias</span>
         </button>
 
         <button
@@ -127,7 +127,7 @@
           class="nav-button"
           mat-menu-item
           (click)="sidenav.toggle()"
-          routerLink="/pages/inventario"
+          routerLink="/pages/inventarios"
           routerLinkActive="active"
         >
           <mat-icon>inventory</mat-icon>
@@ -149,11 +149,11 @@
           class="nav-button"
           mat-menu-item
           (click)="sidenav.toggle()"
-          routerLink="/pages/reportes"
+          routerLink="/pages/productos"
           routerLinkActive="active"
         >
           <mat-icon>assessment</mat-icon>
-          <span>Reportes</span>
+          <span>Productos</span>
         </button>
       </nav>
 
@@ -164,7 +164,9 @@
     </mat-sidenav>
 
     <mat-sidenav-content class="main-content">
-      <router-outlet></router-outlet>
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>

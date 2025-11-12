@@ -2,8 +2,8 @@ import { Categoria } from "./categoria";
 import { Inventario } from "./inventario";
 
 export class Producto{
-    idProducto: number;
-    nombre: number;
+    id: number;
+    nombre: String;
     precio: number;
     categoria: Categoria;
     inventario: Inventario;
