@@ -1,24 +1,27 @@
 import { Component, Inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-
-import { switchMap } from 'rxjs';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
 import { Pedido } from '../../../model/pedido';
 import { PedidoService } from '../../../services/pedido-service';
 import { ClienteService } from '../../../services/cliente-service';
-import { MesaService } from '../../../services/mesa-service';
 import { UsuarioService } from '../../../services/usuario-service';
+import { MesaService } from '../../../services/mesa-service';
+import { ProductoService } from '../../../services/producto-service';
+import { DetallePedido } from '../../../model/detallePedido';
+import { switchMap } from 'rxjs';
 import { Cliente } from '../../../model/cliente';
-import { Mesa } from '../../../model/mesa';
 import { Usuario } from '../../../model/usuario';
+import { Mesa } from '../../../model/mesa';
+import { Producto } from '../../../model/producto';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-pedido-dialog',
@@ -26,112 +29,148 @@ import { Usuario } from '../../../model/usuario';
   imports: [
     CommonModule,
     FormsModule,
-    MatDialogModule,
     MatFormFieldModule,
-    MatSelectModule,
     MatInputModule,
+    MatSelectModule,
     MatButtonModule,
     MatToolbarModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-  ],
+    MatTableModule,
+    MatIconModule,
+    MatDialogContent
+],
   templateUrl: './pedido-dialog-component.html',
-  styleUrl: './pedido-dialog-component.css',
+  styleUrls: ['./pedido-dialog-component.css']
 })
 export class PedidoDialogComponent {
   pedido: Pedido;
-  fechaHoraLocal: string = '';
   clientes: Cliente[] = [];
+  meseros: Usuario[] = [];
   mesas: Mesa[] = [];
-  usuarios: Usuario[] = [];
+  productos: Producto[] = [];
+  estados: string[] = ['PENDIENTE', 'EN_PROCESO', 'FINALIZADO', 'CANCELADO'];
+
+  productoSeleccionado: Producto | null = null;
+  cantidadSeleccionada: number = 1;
+
+  dataSourceDetalles = new MatTableDataSource<DetallePedido>();
+  columns = ['producto', 'cantidad', 'subtotal', 'acciones'];
+
+  soloLectura = false;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: Pedido,
-    private dialogRef: MatDialogRef<PedidoDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private _dialogRef: MatDialogRef<PedidoDialogComponent>,
     private pedidoService: PedidoService,
     private clienteService: ClienteService,
+    private usuarioService: UsuarioService,
     private mesaService: MesaService,
-    private usuarioService: UsuarioService
+    private productoService: ProductoService
   ) {}
 
   ngOnInit(): void {
-    this.pedido = this.data ? { ...this.data } : new Pedido();
+  const incoming = this.data ?? {};
+  this.soloLectura = !!incoming.soloLectura;
 
-    // Establecer fecha local y estado inicial
-    this.fechaHoraLocal = this.pedido.fecha
-      ? this.convertToDatetimeLocal(this.pedido.fecha)
-      : this.convertToDatetimeLocal(new Date());
-
-    if (!this.pedido.estado) {
-      this.pedido.estado = 'PENDIENTE';
-    }
-
-    // Cargar datos relacionados
-    this.clienteService.findAll().subscribe({
-      next: (data) => (this.clientes = data),
-      error: (err) => console.error('Error al cargar clientes', err),
+  
+  if (incoming.pedido && incoming.pedido.id) {
+    
+    this.pedidoService.findById(incoming.pedido.id).subscribe({
+      next: (p) => {
+        this.pedido = p;
+        if (!this.pedido.detalles) this.pedido.detalles = [];
+        this.dataSourceDetalles.data = this.pedido.detalles;
+      },
+      error: (err) => {
+        console.error('Error al cargar pedido completo', err);
+      
+        this.pedido = incoming.pedido;
+        this.dataSourceDetalles.data = this.pedido.detalles || [];
+      },
     });
-
-    this.mesaService.findAll().subscribe({
-      next: (data) => (this.mesas = data),
-      error: (err) => console.error('Error al cargar mesas', err),
-    });
-
-    this.usuarioService.findAll().subscribe({
-      next: (data) => (this.usuarios = data),
-      error: (err) => console.error('Error al cargar usuarios', err),
-    });
+  } else {
+   
+    this.pedido = incoming.pedido ?? new Pedido();
+    if (!this.pedido.fecha) this.pedido.fecha = new Date();
+    if (!this.pedido.estado) this.pedido.estado = 'PENDIENTE';
+    if (!this.pedido.detalles) this.pedido.detalles = [];
+    this.dataSourceDetalles.data = this.pedido.detalles;
   }
 
-  private convertToDatetimeLocal(date: Date): string {
-    const d = new Date(date);
-    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 16);
+   this.clienteService.findAll().subscribe(clients => {
+    this.clientes = clients.filter(c => c.usuario?.rol?.nombre?.toUpperCase() === 'CLIENTE');
+  });
+  this.usuarioService.findAll().subscribe(users => {
+    this.meseros = users.filter(u => u.rol?.nombre?.toUpperCase() === 'MESERO');
+  });
+  this.mesaService.findAll().subscribe(data => (this.mesas = data));
+  this.productoService.findAll().subscribe(data => (this.productos = data));
+}
+
+  get fechaFormateada(): string {
+    if (!this.pedido || !this.pedido.fecha) return '';
+    const d = new Date(this.pedido.fecha);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+    onFechaChange(value: string) {
+    if (!value) return;
+    this.pedido.fecha = new Date(value);
+  }
+
+  agregarProducto() {
+    if (!this.productoSeleccionado || this.cantidadSeleccionada <= 0) return;
+
+    const detalle = new DetallePedido();
+    detalle.producto = this.productoSeleccionado;
+    detalle.cantidad = this.cantidadSeleccionada;
+    detalle.subtotal = this.cantidadSeleccionada * (this.productoSeleccionado.precio ?? 0);
+
+    this.pedido.detalles.push(detalle);
+    this.dataSourceDetalles.data = [...this.pedido.detalles]; 
+
+    this.productoSeleccionado = null;
+    this.cantidadSeleccionada = 1;
+  }
+
+  removeDetalle(detalle: DetallePedido) {
+    this.pedido.detalles = this.pedido.detalles.filter(d => d !== detalle);
+    this.dataSourceDetalles.data = [...this.pedido.detalles];
+  }
+
+  calcularTotal(): number {
+    return (this.pedido.detalles || []).reduce((acc, d) => acc + (d.subtotal ?? 0), 0);
   }
 
   save() {
-    if (this.fechaHoraLocal) {
-      this.pedido.fecha = new Date(this.fechaHoraLocal);
+    if (this.soloLectura) return this._dialogRef.close();
+
+    if (!this.pedido.cliente || !this.pedido.usuario || !this.pedido.mesa) {
+      alert('Debe seleccionar Cliente, Mesero y Mesa.');
+      return;
     }
 
-    const request$ =
-      this.pedido.idPedido && this.pedido.idPedido > 0
-        ? this.pedidoService.update(this.pedido.idPedido, this.pedido)
-        : this.pedidoService.save(this.pedido);
+    
+    if (typeof this.pedido.fecha === 'string') this.pedido.fecha = new Date(this.pedido.fecha);
 
-    request$
-      .pipe(switchMap(() => this.pedidoService.findAll()))
-      .subscribe({
-        next: (data) => {
-          this.pedidoService.setPedidoChange(data);
-          const message =
-            this.pedido.idPedido && this.pedido.idPedido > 0
-              ? 'PEDIDO ACTUALIZADO!'
-              : 'PEDIDO CREADO!';
-          this.pedidoService.setMessageChange(message);
-          this.dialogRef.close(true);
-        },
-        error: (err) => {
-          console.error('Error al guardar pedido', err);
-          this.dialogRef.close(false);
-        },
-      });
+    const operation = this.pedido.id
+      ? this.pedidoService.update(this.pedido.id, this.pedido)
+      : this.pedidoService.save(this.pedido);
+
+    operation.pipe(switchMap(() => this.pedidoService.findAll())).subscribe({
+      next: data => {
+        this.pedidoService.setPedidoChange(data);
+        this.pedidoService.setMessageChange(this.pedido.id ? 'PEDIDO ACTUALIZADO!' : 'PEDIDO CREADO!');
+        this._dialogRef.close(true);
+      },
+      error: err => {
+        console.error('Error al guardar pedido', err);
+        alert('Error al guardar pedido. Revisa la consola del backend.');
+      }
+    });
   }
 
-  cancel() {
-    this.dialogRef.close(false);
-  }
-
-  // Comparadores
-  compareCliente(c1: Cliente, c2: Cliente): boolean {
-    return c1 && c2 ? c1.id === c2.id : c1 === c2;
-  }
-
-  compareMesa(m1: Mesa, m2: Mesa): boolean {
-    return m1 && m2 ? m1.id === m2.id : m1 === m2;
-  }
-
-  compareUsuario(u1: Usuario, u2: Usuario): boolean {
-    return u1 && u2 ? u1.id === u2.id : u1 === u2;
+  close() {
+    this._dialogRef.close();
   }
 }

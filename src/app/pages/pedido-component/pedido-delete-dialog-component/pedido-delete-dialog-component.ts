@@ -1,40 +1,44 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { PedidoService } from '../../../services/pedido-service';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Pedido } from '../../../model/pedido';
+import { PedidoService } from '../../../services/pedido-service';
+import { MaterialModule } from '../../../material/material-module';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-pedido-delete-dialog-component',
-  imports: [CommonModule, MatDialogModule, MatButtonModule],
+  selector: 'app-pedido-delete-dialog',
+  standalone: true,
+  imports: [CommonModule, MaterialModule],
   templateUrl: './pedido-delete-dialog-component.html',
-  styleUrl: './pedido-delete-dialog-component.css',
+  styleUrls: ['./pedido-delete-dialog-component.css']
 })
 export class PedidoDeleteDialogComponent {
- constructor(
+
+  constructor(
     @Inject(MAT_DIALOG_DATA) public data: Pedido,
-    private dialogRef: MatDialogRef<PedidoDeleteDialogComponent>,
-    private reservaService: PedidoService
+    private _dialogRef: MatDialogRef<PedidoDeleteDialogComponent>,
+    private pedidoService: PedidoService
   ) {}
 
-  confirmDelete() {
-    this.reservaService.delete(this.data.idPedido).subscribe({
+  confirmarEliminacion() {
+    if (!this.data?.id) return;
+
+    this.pedidoService.delete(this.data.id).subscribe({
       next: () => {
-        this.reservaService.findAll().subscribe((data) => {
-          this.reservaService.setPedidoChange(data);
-          this.reservaService.setMessageChange('RESERVA ELIMINADA!');
-          this.dialogRef.close(true);
+        this.pedidoService.findAll().subscribe((data) => {
+          this.pedidoService.setPedidoChange(data);
+          this.pedidoService.setMessageChange('Pedido eliminado correctamente.');
+          this._dialogRef.close(true);
         });
       },
       error: (err) => {
-        console.error('❌ Error al eliminar reserva', err);
-        this.dialogRef.close(false);
-      },
+        console.error('Error al eliminar pedido', err);
+        this._dialogRef.close(false);
+      }
     });
   }
 
-  cancel() {
-    this.dialogRef.close(false);
+  cancelar() {
+    this._dialogRef.close(false);
   }
 }

@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ producto.id ? 'Editar Producto' : 'Nuevo Producto' }}</h2>
+
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nombre</mat-label>
+    <input matInput [(ngModel)]="producto.nombre" name="nombre" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Precio</mat-label>
+    <input type="number" matInput [(ngModel)]="producto.precio" name="precio" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Categoría</mat-label>
+    <mat-select [(ngModel)]="producto.categoria" [compareWith]="compareCategoria" name="categoria">
+      <mat-option *ngFor="let c of categorias" [value]="c">{{ c.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Inventario</mat-label>
+    <mat-select [(ngModel)]="producto.inventario" [compareWith]="compareInventario" name="inventario">
+      <mat-option *ngFor="let i of inventarios" [value]="i">{{ i.nombre }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Descripción</mat-label>
+    <textarea matInput [(ngModel)]="producto.descripcion" name="descripcion"></textarea>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Stock Actual</mat-label>
+    <input type="number" matInput [(ngModel)]="producto.stockActual" name="stockActual" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="operate()">Guardar</button>
+</mat-dialog-actions>

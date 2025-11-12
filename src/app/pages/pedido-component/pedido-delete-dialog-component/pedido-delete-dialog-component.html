@@ -1,12 +1,18 @@
-<h2 mat-dialog-title>Confirmar eliminación</h2>
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon color="warn">delete_forever</mat-icon>
+  Confirmar eliminación
+</h2>
 
-<mat-dialog-content>
-  ¿Estás seguro de que deseas eliminar del pedido de
-  <strong>{{ data.cliente?.usuario.nombre }}</strong> para la fecha
-  <strong>{{ data.fecha | date: 'dd/MM/yyyy HH:mm' }}</strong>?
+<mat-dialog-content class="dialog-content">
+  <p>¿Estás seguro de que deseas eliminar el pedido <strong>#{{ data.id }}</strong>?</p>
+  <p>Esta acción no se puede deshacer.</p>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button color="warn" (click)="confirmDelete()">Eliminar</button>
-  <button mat-button (click)="cancel()">Cancelar</button>
+  <button mat-flat-button color="warn" (click)="confirmarEliminacion()">
+    <mat-icon>delete</mat-icon>
+    Eliminar
+  </button>
+
+  <button mat-button (click)="cancelar()">Cancelar</button>
 </mat-dialog-actions>

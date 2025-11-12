@@ -1,0 +1,9 @@
+<mat-dialog-content>
+  ¿Estás seguro de que deseas eliminar el producto
+  <strong>{{ data.nombre }}</strong>?
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" (click)="confirmDelete()">Eliminar</button>
+  <button mat-button (click)="cancel()">Cancelar</button>
+</mat-dialog-actions>

@@ -6,6 +6,8 @@ import { MesaComponent } from './pages/mesa-component/mesa-component';
 import { ReservaComponent } from './pages/reserva-component/reserva-component';
 import { CategoriaComponent } from './pages/categoria-component/categoria-component';
 import { InventarioComponent } from './pages/inventario-component/inventario-component';
+import { ProductoComponent } from './pages/producto-component/producto-component';
+import { PedidoComponent } from './pages/pedido-component/pedido-component';
 
 export const routes: Routes = [
     
@@ -15,6 +17,8 @@ export const routes: Routes = [
     { path: 'pages/mesas', component: MesaComponent },
     { path: 'pages/reservas', component: ReservaComponent },
     { path: 'pages/categorias', component: CategoriaComponent },
-     { path: 'pages/inventarios', component: InventarioComponent },
+    { path: 'pages/inventarios', component: InventarioComponent },
+    { path: 'pages/productos', component: ProductoComponent },
+    { path: 'pages/pedidos', component: PedidoComponent }
 ];
 
