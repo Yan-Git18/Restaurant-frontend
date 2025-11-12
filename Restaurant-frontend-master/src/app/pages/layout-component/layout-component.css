@@ -1,0 +1,213 @@
+/* Container principal */
+.example-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+}
+
+/* Toolbar */
+.example-toolbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+.toolbar-icon {
+    margin-right: 8px;
+}
+
+.toolbar-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Sidenav container */
+.example-sidenav-container {
+    flex: 1;
+    background-color: #f5f7fa;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+/* Sidenav */
+.sidenav {
+    width: 280px;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+    background-color: white;
+}
+
+/* Header del sidenav */
+.sidenav-header {
+    padding: 24px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 12px;
+}
+
+.company-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Navegación */
+.sidenav-nav {
+    padding: 8px 0;
+}
+
+.nav-button {
+    width: 100%;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-button::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.nav-button:hover {
+    background-color: #f8f9fc;
+}
+
+.nav-button:hover::before {
+    transform: scaleY(1);
+}
+
+.nav-button.active {
+    background-color: #eef2ff;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.nav-button.active::before {
+    transform: scaleY(1);
+}
+
+.nav-button mat-icon {
+    margin-right: 16px;
+    color: #64748b;
+    transition: color 0.3s ease;
+}
+
+.nav-button:hover mat-icon,
+.nav-button.active mat-icon {
+    color: #667eea;
+}
+
+.nav-button span {
+    font-size: 15px;
+    color: #334155;
+}
+
+.nav-button.active span {
+    color: #667eea;
+}
+
+/* Footer del sidenav */
+.sidenav-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: white;
+}
+
+.version-text {
+    padding: 16px 20px;
+    margin: 0;
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* Contenido principal */
+.main-content {
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* Remover efectos de focus predeterminados */
+.nav-button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* Estilos para el mat-divider */
+mat-divider {
+    border-top-color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidenav {
+        width: 260px;
+    }
+    
+    .main-content {
+        padding: 16px;
+    }
+    
+    .toolbar-title {
+        font-size: 16px;
+    }
+}
+
+/* Animaciones suaves */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar personalizado para sidenav */
+.sidenav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidenav::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.sidenav::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.sidenav::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}

@@ -1,0 +1,97 @@
+.table-container {
+  padding: 24px;
+  background-color: #f9fafb;
+  max-width: 1500px;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Encabezado */
+.table-header {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.table-title {
+  display: flex;
+  align-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.title-icon {
+  color: #2563eb;
+  margin-right: 10px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.filter-field {
+  flex: 1;
+  min-width: 260px;
+}
+
+.add-button {
+  background-color: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Tabla */
+.table-wrapper {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+}
+
+th {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  padding: 14px;
+}
+
+td {
+  padding: 12px 14px;
+  color: #1f2937;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+tr:hover td {
+  background-color: #f9fafb;
+}
+
+/* Botones */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* Paginador */
+.styled-paginator {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 12px;
+  padding: 8px 16px;
+}

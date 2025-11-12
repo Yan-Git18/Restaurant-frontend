@@ -1,0 +1,49 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ form.value.id ? 'edit' : 'add_circle' }}</mat-icon>
+      <h2 mat-dialog-title class="dialog-title">
+        {{ form.value.id ? 'Editar Categoría' : 'Nueva Categoría' }}
+      </h2>
+    </div>
+    <button mat-icon-button class="close-button" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="form" class="form-fields">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre de la Categoría</mat-label>
+        <input matInput formControlName="nombre" placeholder="Ej. Bebidas, Postres" />
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-hint>Ingresa un nombre descriptivo</mat-hint>
+
+        <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+          El nombre es <strong>obligatorio</strong>.
+        </mat-error>
+        <mat-error *ngIf="form.get('nombre')?.hasError('minlength')">
+          Debe tener al menos <strong>3 caracteres</strong>.
+        </mat-error>
+      </mat-form-field>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button color="warn" (click)="close()">
+      <mat-icon>close</mat-icon> Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      [disabled]="form.invalid"
+      (click)="operate()"
+    >
+      <mat-icon>{{ form.value.id ? 'save' : 'add' }}</mat-icon>
+      {{ form.value.id ? 'Guardar Cambios' : 'Crear Categoría' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,49 @@
+<div class="delete-dialog-container">
+  <!-- Icono de advertencia -->
+  <div class="warning-icon-container">
+    <div class="warning-circle">
+      <mat-icon class="warning-icon">warning</mat-icon>
+    </div>
+  </div>
+
+  <!-- Título -->
+  <h2 mat-dialog-title class="delete-title">
+    Confirmar Eliminación
+  </h2>
+
+  <!-- Contenido -->
+  <mat-dialog-content class="delete-content">
+    <p class="warning-message">
+      ¿Estás seguro de que deseas eliminar el rol
+      <strong class="highlight-name">{{ data.nombre }}</strong>?
+    </p>
+    
+    <div class="warning-box">
+      <mat-icon>info</mat-icon>
+      <div class="warning-text">
+        <p class="warning-title">Esta acción es irreversible</p>
+        <p class="warning-description">
+          El rol será eliminado permanentemente y no podrá recuperarse.
+        </p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Acciones -->
+  <mat-dialog-actions class="delete-actions">
+    <button 
+      mat-stroked-button 
+      class="cancel-delete-button"
+      (click)="cancel()">
+      <mat-icon>close</mat-icon>
+      Cancelar
+    </button>
+    <button 
+      mat-raised-button 
+      class="confirm-delete-button"
+      (click)="confirmDelete()">
+      <mat-icon>delete_forever</mat-icon>
+      Sí, Eliminar
+    </button>
+  </mat-dialog-actions>
+</div>

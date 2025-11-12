@@ -1,0 +1,88 @@
+<h2 mat-dialog-title>
+  {{ comprobante.id ? 'Editar Comprobante' : 'Nuevo Comprobante' }}
+</h2>
+
+<mat-dialog-content>
+  <form #formComprobante="ngForm">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Número de Comprobante</mat-label>
+      <input
+        matInput
+        required
+        [(ngModel)]="comprobante.numero"
+        name="numero"
+        placeholder="Ej: 000123"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Cliente</mat-label>
+      <input
+        matInput
+        required
+        [(ngModel)]="comprobante.cliente"
+        name="cliente"
+        placeholder="Nombre del cliente"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo de Comprobante</mat-label>
+      <mat-select
+        required
+        [(ngModel)]="comprobante.tipo"
+        name="tipo"
+      >
+        <mat-option value="BOLETA">Boleta</mat-option>
+        <mat-option value="FACTURA">Factura</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Fecha</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        required
+        [(ngModel)]="comprobante.fecha"
+        name="fecha"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Total</mat-label>
+      <input
+        type="number"
+        matInput
+        required
+        [(ngModel)]="comprobante.total"
+        name="total"
+        placeholder="Monto total del comprobante"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Descripción</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="comprobante.descripcion"
+        name="descripcion"
+        placeholder="Detalles adicionales"
+      ></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button color="warn" (click)="close()">Cancelar</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="operate()"
+    [disabled]="!comprobante.numero || !comprobante.cliente || !comprobante.total"
+  >
+    Guardar
+  </button>
+</mat-dialog-actions>
