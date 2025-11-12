@@ -7,18 +7,18 @@ import { UsuarioService } from '../../services/usuario-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { UsuarioDialogComponent } from './usuario-dialog-component/usuario-dialog-component';
-import { MaterialModule } from '../../material/material-module';
 import { UsuarioDeleteDialogComponent } from './usuario-delete-dialog-component/usuario-delete-dialog-component';
+import { MaterialModule } from '../../material/material-module';
 
 @Component({
   selector: 'app-usuario',
+  standalone: true,
   imports: [MaterialModule],
   templateUrl: './usuario-component.html',
-  styleUrl: './usuario-component.css',
+  styleUrls: ['./usuario-component.css'],
 })
 export class UsuarioComponent {
   dataSource: MatTableDataSource<Usuario>;
-
   columnsDefinitions = [
     { def: 'id', label: 'ID', hide: true },
     { def: 'nombre', label: 'Nombre', hide: false },
@@ -27,8 +27,8 @@ export class UsuarioComponent {
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private usuarioService: UsuarioService,
@@ -37,37 +37,69 @@ export class UsuarioComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 Intentando cargar usuarios desde backend...');
+    this.loadAll();
 
+    this.usuarioService.getUsuarioChange().subscribe({
+      next: (data) => this.createTable(data),
+      error: (err) => console.error('Error en getUsuarioChange', err),
+    });
+
+    this.usuarioService.getMessageChange().subscribe((msg) => {
+      this._snackBar.open(msg, 'Cerrar', { duration: 3000 });
+    });
+  }
+
+  private loadAll() {
     this.usuarioService.findAll().subscribe({
-      next: (data) => {
-        console.log('✅ Datos recibidos desde backend:', data);
-        this.createTable(data);
-      },
+      next: (data) => this.createTable(data),
       error: (err) => {
-        console.error('❌ Error al obtener usuarios:', err);
+        this._snackBar.open('Error al cargar usuarios', 'Cerrar', { duration: 3000 });
       },
     });
   }
 
   createTable(data: Usuario[]) {
-    this.dataSource = new MatTableDataSource(data);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource = new MatTableDataSource(data || []);
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+
+    this.dataSource.filterPredicate = (data: Usuario, filter: string) => {
+      const f = filter.trim().toLowerCase();
+      const texto = `${data.nombre} ${data.correo} ${data.rol?.nombre}`.toLowerCase();
+      return texto.includes(f);
+    };
   }
 
   getDisplayedColumns() {
     return this.columnsDefinitions.filter((cd) => !cd.hide).map((cd) => cd.def);
   }
 
-  applyFilter(e: any) {
-    this.dataSource.filter = e.target.value.trim();
+  applyFilter(event: any) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
   }
 
   openDialog(usuario?: Usuario) {
-    this._dialog.open(UsuarioDialogComponent, {
+    const dialogRef = this._dialog.open(UsuarioDialogComponent, {
       width: '750px',
       data: usuario,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'create') {
+        this._snackBar.open('Usuario creado correctamente', 'Cerrar', { duration: 2500 });
+      } else if (result === 'edit') {
+        this._snackBar.open('Usuario actualizado correctamente', 'Cerrar', { duration: 2500 });
+      }
+
+      if (result) {
+        this.usuarioService.findAll().subscribe({
+          next: (data) => this.createTable(data),
+        });
+      }
     });
   }
 
@@ -79,8 +111,11 @@ export class UsuarioComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', {
-          duration: 3000,
+        this.usuarioService.findAll().subscribe({
+          next: (data) => {
+            this.createTable(data);
+            this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', { duration: 3000 });
+          },
         });
       }
     });

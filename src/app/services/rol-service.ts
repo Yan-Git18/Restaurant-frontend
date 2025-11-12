@@ -8,31 +8,27 @@ import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class RolService extends GenericService<Rol>{
-  private rolChange: Subject<Rol[]> = new Subject<Rol[]>;
-  private messageChange: Subject<string> = new Subject<string>;
+export class RolService extends GenericService<Rol> {
+  private rolChange = new Subject<Rol[]>();
+  private messageChange = new Subject<string>();
 
-  constructor(){
-    super(
-      inject(HttpClient),
-    `${environment.HOST}/roles`
-    )
+  constructor() {
+    super(inject(HttpClient), `${environment.HOST}/roles`);
   }
 
-  //////////////////////////
-  setRolChange(data: Rol[]){
+  setRolChange(data: Rol[]) {
     this.rolChange.next(data);
   }
 
-  getCRolChange(){
+  getRolChange() {
     return this.rolChange.asObservable();
   }
 
-  setMessageChange(data: string){
+  setMessageChange(data: string) {
     this.messageChange.next(data);
   }
 
-  getMessageChange(){
+  getMessageChange() {
     return this.messageChange.asObservable();
   }
 }

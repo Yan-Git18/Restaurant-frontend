@@ -1,69 +1,76 @@
 import { Component, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIcon } from "@angular/material/icon";
+import { CommonModule } from '@angular/common';
 import { Mesa } from '../../../model/mesa';
 import { MesaService } from '../../../services/mesa-service';
 import { switchMap } from 'rxjs';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-mesa-dialog-component',
+  selector: 'app-mesa-dialog',
+  standalone: true,
   imports: [
     CommonModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatToolbarModule,
-    MatSelectModule,
-    FormsModule,
     MatInputModule,
     MatButtonModule,
+    MatSelectModule,
+    MatIcon,
+    ReactiveFormsModule,
   ],
   templateUrl: './mesa-dialog-component.html',
-  styleUrl: './mesa-dialog-component.css',
+  styleUrls: ['./mesa-dialog-component.css'],
 })
 export class MesaDialogComponent {
-  mesa: Mesa;
+  form: FormGroup;
+  estados = ['Disponible', 'Ocupada', 'Reservada', 'Inactiva'];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) private data: Mesa,
-    private _dialogRef: MatDialogRef<MesaDialogComponent>,
-    private mesaService: MesaService
-  ) {}
-
-  ngOnInit(): void {
-    this.mesa = this.data ? { ...this.data } : new Mesa();
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<MesaDialogComponent>,
+    private mesaService: MesaService,
+    @Inject(MAT_DIALOG_DATA) public data: Mesa
+  ) {
+    this.form = this.fb.group({
+      id: [data?.id],
+      numero: [data?.numero || '', [Validators.required, Validators.min(1)]],
+      ubicacion: [data?.ubicacion || '', [Validators.required, Validators.minLength(3)]],
+      estado: [data?.estado || '', Validators.required],
+    });
   }
 
-  operate() {
-    if (this.mesa != null && this.mesa.id > 0) {
-      this.mesaService
-        .update(this.mesa.id, this.mesa)
-        .pipe(switchMap(() => this.mesaService.findAll()))
-        .subscribe((data) => {
-          this.mesaService.setMesaChange(data);
-          this.mesaService.setMessageChange('MESA UPDATED!');
-        });
-
-      this.close();
-    } else {
-      this.mesaService
-        .save(this.mesa)
-        .pipe(switchMap(() => this.mesaService.findAll()))
-        .subscribe((data) => {
-          this.mesaService.setMesaChange(data);
-          this.mesaService.setMessageChange('MESA CREATED!');
-        });
-
-      this.close();
+  operate(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
+
+    const mesa: Mesa = this.form.value;
+    const operacion = mesa.id
+      ? this.mesaService.update(mesa.id, mesa)
+      : this.mesaService.save(mesa);
+
+    operacion.pipe(switchMap(() => this.mesaService.findAll())).subscribe({
+      next: (data) => {
+        this.mesaService.setMesaChange(data);
+        this.mesaService.setMessageChange(
+          mesa.id ? 'Mesa editada correctamente ✅' : 'Mesa creada correctamente ✅'
+        );
+        this.dialogRef.close(mesa.id ? 'edit' : 'create');
+      },
+      error: () => {
+        this.mesaService.setMessageChange('❌ Error al guardar la mesa');
+      },
+    });
   }
 
-  close() {
-    this._dialogRef.close();
+  close(): void {
+    this.dialogRef.close();
   }
 }

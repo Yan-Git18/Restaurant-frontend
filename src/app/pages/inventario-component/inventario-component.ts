@@ -80,7 +80,6 @@ export class InventarioComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         if (!inventario) {
-          // Registrar nuevo inventario
           this.inventarioService.save(result).subscribe({
             next: () => {
               this._snackBar.open('Inventario registrado correctamente', 'Cerrar', { duration: 3000 });
@@ -91,7 +90,6 @@ export class InventarioComponent {
             }
           });
         } else {
-          // Actualizar inventario existente
           this.inventarioService.update(result.id, result).subscribe({
             next: () => {
               this._snackBar.open('Inventario actualizado correctamente', 'Cerrar', { duration: 3000 });

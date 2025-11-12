@@ -1,19 +1,24 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions, MatDialogModule } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogModule,
+} from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { switchMap } from 'rxjs';
+
 import { Producto } from '../../../model/producto';
+import { Categoria } from '../../../model/categoria';
+import { Inventario } from '../../../model/inventario';
 import { ProductoService } from '../../../services/producto-service';
 import { CategoriaService } from '../../../services/categoria-service';
 import { InventarioService } from '../../../services/inventario-service';
-import { Categoria } from '../../../model/categoria';
-import { Inventario } from '../../../model/inventario';
-import { switchMap } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { MatToolbarModule } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -27,11 +32,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     FormsModule,
     MatInputModule,
     MatButtonModule,
-],
+  ],
   templateUrl: './producto-dialog-component.html',
-  styleUrls: ['./producto-dialog-component.css']
+  styleUrls: ['./producto-dialog-component.css'],
 })
-export class ProductoDialogComponent {
+export class ProductoDialogComponent implements OnInit {
   producto: Producto = new Producto();
   categorias: Categoria[] = [];
   inventarios: Inventario[] = [];
@@ -45,26 +50,48 @@ export class ProductoDialogComponent {
   ) {}
 
   ngOnInit(): void {
-    if (this.data) this.producto = { ...this.data };
+    if (this.data) {
+      this.producto = { ...this.data };
+    }
 
-    this.categoriaService.findAll().subscribe(data => (this.categorias = data));
-    this.inventarioService.findAll().subscribe(data => (this.inventarios = data));
+    this.categoriaService.findAll().subscribe({
+      next: (data) => (this.categorias = data),
+      error: () => (this.categorias = []),
+    });
+
+    this.inventarioService.findAll().subscribe({
+      next: (data) => (this.inventarios = data),
+      error: () => (this.inventarios = []),
+    });
   }
 
-operate() {
-  const op = this.producto.id
-    ? this.productoService.update(this.producto.id, this.producto)
-    : this.productoService.save(this.producto);
+  operate() {
+    if (!this.producto.nombre || !this.producto.precio) {
+      this.productoService.setMessageChange('Debe completar los campos obligatorios.');
+      return;
+    }
 
-  op.pipe(switchMap(() => this.productoService.findAll()))
-    .subscribe(data => {
-      this.productoService.setProductoChange(data);
-      this.productoService.setMessageChange(
-        this.producto.id ? 'Producto editado correctamente' : 'Producto creado correctamente'
-      );
-      this._dialogRef.close(this.producto.id ? 'edit' : 'create'); 
-    });
-}
+    const operacion = this.producto.id
+      ? this.productoService.update(this.producto.id, this.producto)
+      : this.productoService.save(this.producto);
+
+    operacion
+      .pipe(switchMap(() => this.productoService.findAll()))
+      .subscribe({
+        next: (data) => {
+          this.productoService.setProductoChange(data);
+          this.productoService.setMessageChange(
+            this.producto.id
+              ? 'Producto editado correctamente'
+              : 'Producto creado correctamente'
+          );
+          this._dialogRef.close(this.producto.id ? 'edit' : 'create');
+        },
+        error: () => {
+          this.productoService.setMessageChange('Ocurrió un error al guardar el producto.');
+        },
+      });
+  }
 
   close() {
     this._dialogRef.close();

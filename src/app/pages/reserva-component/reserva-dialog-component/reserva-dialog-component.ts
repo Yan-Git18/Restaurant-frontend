@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Reserva } from '../../../model/reserva';
 import { ReservaService } from '../../../services/reserva-service';
@@ -6,7 +6,6 @@ import { switchMap } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
@@ -16,25 +15,28 @@ import { MesaService } from '../../../services/mesa-service';
 import { ClienteService } from '../../../services/cliente-service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-reserva-dialog-component',
+  standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatToolbarModule,
     MatSelectModule,
-    FormsModule,
     MatInputModule,
     MatButtonModule,
     MatDatepickerModule,
     MatNativeDateModule,
   ],
   templateUrl: './reserva-dialog-component.html',
-  styleUrl: './reserva-dialog-component.css',
+  styleUrls: ['./reserva-dialog-component.css'],
 })
-export class ReservaDialogComponent {
+export class ReservaDialogComponent implements OnInit {
+  form: FormGroup;
   reserva: Reserva;
   mesas: Mesa[] = [];
   clientes: Cliente[] = [];
@@ -43,6 +45,7 @@ export class ReservaDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: Reserva,
     private _dialogRef: MatDialogRef<ReservaDialogComponent>,
+    private fb: FormBuilder,
     private reservaService: ReservaService,
     private mesaService: MesaService,
     private clienteService: ClienteService
@@ -51,25 +54,33 @@ export class ReservaDialogComponent {
   ngOnInit(): void {
     this.reserva = this.data ? { ...this.data } : new Reserva();
 
-    // Convertir fecha a formato datetime-local si existe
     if (this.reserva.fechaHora) {
       this.fechaHoraLocal = this.convertToDatetimeLocal(this.reserva.fechaHora);
     }
 
-    // Cargar mesas desde el backend
+    this.form = this.fb.group({
+      cliente: [this.reserva.cliente || null, Validators.required],
+      mesa: [this.reserva.mesa || null, Validators.required],
+      fechaHora: [this.fechaHoraLocal || '', Validators.required],
+      numeroPersonas: [
+        this.reserva.numeroPersonas || 1,
+        [Validators.required, Validators.min(1)],
+      ],
+      estado: [this.reserva.estado || 'Pendiente', Validators.required],
+      observaciones: [this.reserva.observaciones || '', Validators.maxLength(250)],
+    });
+
     this.mesaService.findAll().subscribe({
       next: (data) => (this.mesas = data),
       error: (err) => console.error('Error al cargar mesas', err),
     });
 
-    // Cargar clientes desde el backend
     this.clienteService.findAll().subscribe({
       next: (data) => (this.clientes = data),
       error: (err) => console.error('Error al cargar clientes', err),
     });
   }
 
-  // Convertir Date a formato datetime-local (YYYY-MM-DDTHH:mm)
   convertToDatetimeLocal(fecha: Date | string): string {
     const date = new Date(fecha);
     const year = date.getFullYear();
@@ -81,31 +92,36 @@ export class ReservaDialogComponent {
   }
 
   operate() {
-    // Convertir la fecha del formato datetime-local a Date antes de guardar
-    if (this.fechaHoraLocal) {
-      this.reserva.fechaHora = new Date(this.fechaHoraLocal);
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
 
-    if (this.reserva != null && this.reserva.id > 0) {
+    const formValue = this.form.value;
+    const reservaFinal: Reserva = {
+      ...this.reserva,
+      ...formValue,
+      fechaHora: new Date(formValue.fechaHora),
+    };
+
+    if (this.reserva && this.reserva.id > 0) {
       this.reservaService
-        .update(this.reserva.id, this.reserva)
+        .update(this.reserva.id, reservaFinal)
         .pipe(switchMap(() => this.reservaService.findAll()))
         .subscribe((data) => {
           this.reservaService.setReservaChange(data);
           this.reservaService.setMessageChange('RESERVA UPDATED!');
+          this.close();
         });
-
-      this.close();
     } else {
       this.reservaService
-        .save(this.reserva)
+        .save(reservaFinal)
         .pipe(switchMap(() => this.reservaService.findAll()))
         .subscribe((data) => {
           this.reservaService.setReservaChange(data);
           this.reservaService.setMessageChange('RESERVA CREATED!');
+          this.close();
         });
-
-      this.close();
     }
   }
 
@@ -113,12 +129,10 @@ export class ReservaDialogComponent {
     this._dialogRef.close();
   }
 
-  // Función para comparar clientes por ID
   compareCliente(c1: Cliente, c2: Cliente): boolean {
     return c1 && c2 ? c1.id === c2.id : c1 === c2;
   }
 
-  // Función para comparar mesas por ID
   compareMesa(m1: Mesa, m2: Mesa): boolean {
     return m1 && m2 ? m1.id === m2.id : m1 === m2;
   }

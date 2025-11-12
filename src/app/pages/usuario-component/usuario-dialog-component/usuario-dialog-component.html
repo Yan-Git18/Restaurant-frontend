@@ -1,34 +1,63 @@
-<mat-dialog-content>
-  <mat-toolbar color="primary">
-    <span>{{ usuario.id ? 'Editar Usuario' : 'Nuevo Usuario' }}</span>
-  </mat-toolbar>
+<h2 mat-dialog-title>
+  {{ data?.id ? 'Editar Usuario' : 'Nuevo Usuario' }}
+</h2>
 
-  <div class="example-container">
+<mat-dialog-content>
+  <form [formGroup]="form" class="example-container">
+
+    <!-- Nombre -->
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Nombre</mat-label>
-      <input matInput [(ngModel)]="usuario.nombre" />
+      <input matInput formControlName="nombre" placeholder="Ej. Juan Pérez" />
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+        El nombre es obligatorio.
+      </mat-error>
+      <mat-error *ngIf="form.get('nombre')?.hasError('minlength')">
+        Mínimo 3 caracteres.
+      </mat-error>
     </mat-form-field>
 
+    <!-- Correo -->
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Correo</mat-label>
-      <input matInput type="email" [(ngModel)]="usuario.correo" />
+      <input matInput type="email" formControlName="correo" placeholder="Ej. correo@ejemplo.com" />
+      <mat-error *ngIf="form.get('correo')?.hasError('required')">
+        El correo es obligatorio.
+      </mat-error>
+      <mat-error *ngIf="form.get('correo')?.hasError('email')">
+        Ingresa un correo válido.
+      </mat-error>
     </mat-form-field>
 
+    <!-- Contraseña -->
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Contraseña</mat-label>
-      <input matInput type="password" [(ngModel)]="usuario.contrasena" />
+      <input matInput type="password" formControlName="contrasena" />
+      <mat-error *ngIf="form.get('contrasena')?.hasError('required')">
+        La contraseña es obligatoria.
+      </mat-error>
+      <mat-error *ngIf="form.get('contrasena')?.hasError('minlength')">
+        Mínimo 6 caracteres.
+      </mat-error>
     </mat-form-field>
 
+    <!-- Rol -->
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Rol</mat-label>
-      <mat-select [(ngModel)]="usuario.rol">
+      <mat-select formControlName="rol">
         <mat-option *ngFor="let r of roles" [value]="r">{{ r.nombre }}</mat-option>
       </mat-select>
+      <mat-error *ngIf="form.get('rol')?.hasError('required')">
+        Selecciona un rol.
+      </mat-error>
     </mat-form-field>
 
-    <div class="flex justify-end gap-2 mt-4">
-      <button mat-button color="primary" (click)="operate()">Guardar</button>
-      <button mat-button color="warn" (click)="close()">Cancelar</button>
-    </div>
-  </div>
+  </form>
 </mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="operate()">
+    {{ data?.id ? 'Guardar Cambios' : 'Crear Usuario' }}
+  </button>
+</mat-dialog-actions>

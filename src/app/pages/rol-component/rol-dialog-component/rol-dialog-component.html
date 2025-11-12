@@ -1,6 +1,5 @@
-<p>rol-dialog-component works!</p>
+
 <div class="dialog-container">
-  <!-- Header -->
   <div class="dialog-header">
     <div class="header-content">
       <mat-icon class="header-icon">{{ rol.id ? 'edit' : 'add_circle' }}</mat-icon>
@@ -15,45 +14,42 @@
 
   <!-- Content -->
   <mat-dialog-content class="dialog-content">
-    <div class="form-container">
-      
-      <div class="form-description">
-        <mat-icon>info</mat-icon>
-        <p>{{ rol.id ? 'Modifica la información del rol' : 'Completa el formulario para crear un nuevo rol' }}</p>
-      </div>
+    <form [formGroup]="form" class="form-fields">
 
-      <form class="form-fields">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre del Rol</mat-label>
-          <input 
-            matInput 
-            placeholder="Ej. Administrador, Mesero, Cocinero" 
-            [(ngModel)]="rol.nombre"
-            name="nombre"
-            required
-          />
-          <mat-icon matPrefix>label</mat-icon>
-          <mat-hint>Ingresa un nombre descriptivo para el rol</mat-hint>
-        </mat-form-field>
-      </form>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del Rol</mat-label>
+        <input
+          matInput
+          placeholder="Ej. Administrador, Conductor"
+          formControlName="nombre"
+          required
+        />
+        <mat-icon matPrefix>label</mat-icon>
+        <mat-hint>Ingresa un nombre descriptivo para el rol</mat-hint>
 
-    </div>
+        <mat-error *ngIf="form.get('nombre')?.hasError('required')">
+          El nombre es <strong>obligatorio</strong>.
+        </mat-error>
+        <mat-error *ngIf="form.get('nombre')?.hasError('minlength')">
+          Debe tener al menos <strong>3 caracteres</strong>.
+        </mat-error>
+      </mat-form-field>
+
+    </form>
   </mat-dialog-content>
 
   <!-- Actions -->
   <mat-dialog-actions class="dialog-actions">
-    <button 
-      mat-stroked-button 
-      class="cancel-button"
-      (click)="close()">
-      <mat-icon>close</mat-icon>
-      Cancelar
+    <button mat-stroked-button class="cancel-button" (click)="close()">
+      <mat-icon>close</mat-icon> Cancelar
     </button>
-    <button 
-      mat-raised-button 
+    <button
+      mat-raised-button
       color="primary"
       class="save-button"
-      (click)="operate()">
+      (click)="operate()"
+      [disabled]="form.invalid"
+    >
       <mat-icon>{{ rol.id ? 'save' : 'add' }}</mat-icon>
       {{ rol.id ? 'Guardar Cambios' : 'Crear Rol' }}
     </button>

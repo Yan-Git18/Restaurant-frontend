@@ -85,7 +85,6 @@ export class PedidoComponent {
     if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
   }
 
-  // Abrir el dialog en modo CREAR (sin pedido)
   openDialog(pedido?: Pedido) {
     const dialogRef = this._dialog.open(PedidoDialogComponent, {
       width: '800px',
@@ -108,7 +107,6 @@ export class PedidoComponent {
     });
   }
 
-  // Ver detalle en modo SOLO LECTURA
   verDetalle(pedido: Pedido) {
     this._dialog.open(PedidoDialogComponent, {
       width: '800px',

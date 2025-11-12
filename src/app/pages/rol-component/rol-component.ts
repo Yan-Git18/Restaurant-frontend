@@ -22,7 +22,7 @@ export class RolComponent {
   columnsDefinitions = [
     { def: 'id', label: 'ID', hide: true },
     { def: 'nombre', label: 'Nombre', hide: false },
-    { def: 'actions', label: 'Acciones', hide: false } 
+    { def: 'actions', label: 'Acciones', hide: false },
   ];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -35,16 +35,26 @@ export class RolComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 Intentando cargar roles desde backend...');
+    console.log('Intentando cargar roles desde backend...');
 
     this.rolService.findAll().subscribe({
       next: (data) => {
-        console.log('✅ Datos recibidos desde backend:', data);
+        console.log('Datos recibidos desde backend:', data);
         this.createTable(data);
       },
       error: (err) => {
-        console.error('❌ Error al obtener roles:', err);
+        console.error('Error al obtener roles:', err);
       },
+    });
+
+    this.rolService.getRolChange().subscribe((data) => {
+      this.createTable(data);
+    });
+
+    this.rolService.getMessageChange().subscribe((msg) => {
+      this._snackBar.open(msg, 'Cerrar', {
+        duration: 3000,
+      });
     });
   }
 
@@ -70,17 +80,17 @@ export class RolComponent {
   }
 
   openDeleteDialog(rol: Rol) {
-      const dialogRef = this._dialog.open(RolDeleteDialogComponent, {
-        width: '400px',
-        data: rol,
-      });
-  
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', {
-            duration: 3000,
-          });
-        }
-      });
-    }
+    const dialogRef = this._dialog.open(RolDeleteDialogComponent, {
+      width: '400px',
+      data: rol,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this._snackBar.open('Rol eliminado correctamente', 'Cerrar', {
+          duration: 3000,
+        });
+      }
+    });
+  }
 }

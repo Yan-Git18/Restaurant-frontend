@@ -1,32 +1,65 @@
-<mat-dialog-content>
-  <mat-toolbar color="primary">
-    <span>{{ mesa.id ? 'Editar Mesa' : 'Nueva Mesa' }}</span>
-  </mat-toolbar>
-
-  <div class="example-container">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Número</mat-label>
-      <input matInput type="number" [(ngModel)]="mesa.numero" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Ubicación</mat-label>
-      <input matInput [(ngModel)]="mesa.ubicacion" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Estado</mat-label>
-      <mat-select [(ngModel)]="mesa.estado">
-        <mat-option value="Disponible">Disponible</mat-option>
-        <mat-option value="Ocupada">Ocupada</mat-option>
-        <mat-option value="Reservada">Reservada</mat-option>
-        <mat-option value="Mantenimiento">Mantenimiento</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <div class="flex justify-end gap-2 mt-4">
-      <button mat-button color="primary" (click)="operate()">Guardar</button>
-      <button mat-button color="warn" (click)="close()">Cancelar</button>
+<div class="dialog-container">
+  <div class="dialog-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">
+        {{ form.value.id ? 'edit' : 'add_circle' }}
+      </mat-icon>
+      <h2 mat-dialog-title class="dialog-title">
+        {{ form.value.id ? 'Editar Mesa' : 'Nueva Mesa' }}
+      </h2>
     </div>
+    <button mat-icon-button class="close-button" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
-</mat-dialog-content>
+
+  <mat-dialog-content class="dialog-content">
+    <form [formGroup]="form" class="form-fields">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Número de Mesa</mat-label>
+        <mat-icon matPrefix>confirmation_number</mat-icon>
+        <input matInput type="number" formControlName="numero" />
+        <mat-error *ngIf="form.get('numero')?.hasError('required')">
+          El número es <strong>obligatorio</strong>.
+        </mat-error>
+        <mat-error *ngIf="form.get('numero')?.hasError('min')">
+          Debe ser un número <strong>mayor a 0</strong>.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ubicación</mat-label>
+        <mat-icon matPrefix>place</mat-icon>
+        <input matInput formControlName="ubicacion" placeholder="Ej. Terraza, Interior" />
+        <mat-error *ngIf="form.get('ubicacion')?.hasError('required')">
+          La ubicación es <strong>obligatoria</strong>.
+        </mat-error>
+        <mat-error *ngIf="form.get('ubicacion')?.hasError('minlength')">
+          Debe tener al menos <strong>3 caracteres</strong>.
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Estado</mat-label>
+        <mat-icon matPrefix>event_seat</mat-icon>
+        <mat-select formControlName="estado">
+          <mat-option *ngFor="let e of estados" [value]="e">{{ e }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('estado')?.hasError('required')">
+          El estado es <strong>obligatorio</strong>.
+        </mat-error>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-stroked-button color="warn" (click)="close()">
+      <mat-icon>close</mat-icon> Cancelar
+    </button>
+
+    <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="operate()">
+      <mat-icon>{{ form.value.id ? 'save' : 'add' }}</mat-icon>
+      {{ form.value.id ? 'Guardar Cambios' : 'Crear Mesa' }}
+    </button>
+  </mat-dialog-actions>
+</div>

@@ -40,16 +40,21 @@ export class ReservaComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 Intentando cargar reservas desde backend...');
+    this.loadReservas();
 
+    this.reservaService.getReservaChange().subscribe((data) => {
+      this.createTable(data);
+    });
+
+    this.reservaService.getMessageChange().subscribe((msg) => {
+      this._snackBar.open(msg, 'Cerrar', { duration: 3000 });
+    });
+  }
+
+  private loadReservas(): void {
     this.reservaService.findAll().subscribe({
-      next: (data) => {
-        console.log('✅ Datos recibidos desde backend:', data);
-        this.createTable(data);
-      },
-      error: (err) => {
-        console.error('❌ Error al obtener reservas:', err);
-      },
+      next: (data) => this.createTable(data),
+      error: (err) => console.error('❌ Error al obtener reservas:', err),
     });
   }
 
@@ -64,7 +69,7 @@ export class ReservaComponent {
   }
 
   applyFilter(e: any) {
-    this.dataSource.filter = e.target.value.trim();
+    this.dataSource.filter = e.target.value.trim().toLowerCase();
   }
 
   openDialog(reserva?: Reserva) {
@@ -75,17 +80,18 @@ export class ReservaComponent {
   }
 
   openDeleteDialog(reserva: Reserva) {
-    const dialogRef = this._dialog.open(ReservaDeleteDialogComponent, {
-      width: '400px',
-      data: reserva,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this._snackBar.open('Reserva eliminada correctamente', 'Cerrar', {
-          duration: 3000,
-        });
-      }
-    });
+    this._dialog
+      .open(ReservaDeleteDialogComponent, {
+        width: '400px',
+        data: reserva,
+      })
+      .afterClosed()
+      .subscribe((result) => {
+        if (result) {
+          this._snackBar.open('Reserva eliminada correctamente', 'Cerrar', {
+            duration: 3000,
+          });
+        }
+      });
   }
 }

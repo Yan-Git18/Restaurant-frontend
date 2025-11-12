@@ -7,7 +7,6 @@ import { MatSort } from '@angular/material/sort';
 import { ClienteService } from '../../services/cliente-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-import { Usuario } from '../../model/usuario';
 import { ClienteDialogComponent } from './cliente-dialog-component/cliente-dialog-component';
 import { ClienteDeleteDialogComponent } from './cliente-delete-dialog-component/cliente-delete-dialog-component';
 
@@ -28,8 +27,8 @@ export class ClienteComponent {
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private clienteService: ClienteService,
@@ -38,16 +37,27 @@ export class ClienteComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 Intentando cargar usuarios desde backend...');
+    console.log('Intentando cargar clientes desde backend...');
 
     this.clienteService.findAll().subscribe({
       next: (data) => {
-        console.log('✅ Datos recibidos desde backend:', data);
+        console.log('Datos recibidos desde backend:', data);
         this.createTable(data);
       },
       error: (err) => {
-        console.error('❌ Error al obtener usuarios:', err);
+        console.error('Error al obtener clientes:', err);
       },
+    });
+
+    this.clienteService.getClienteChange().subscribe((data) => {
+      console.log('Refrescando tabla de clientes...');
+      this.createTable(data);
+    });
+
+    this.clienteService.getMessageChange().subscribe((msg) => {
+      this._snackBar.open(msg, 'Cerrar', {
+        duration: 3000,
+      });
     });
   }
 
@@ -66,9 +76,21 @@ export class ClienteComponent {
   }
 
   openDialog(cliente?: Cliente) {
-    this._dialog.open(ClienteDialogComponent, {
+    const dialogRef = this._dialog.open(ClienteDialogComponent, {
       width: '750px',
       data: cliente,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this._snackBar.open(
+          result === 'create'
+            ? 'Cliente creado correctamente'
+            : 'Cliente actualizado correctamente',
+          'Cerrar',
+          { duration: 2500 }
+        );
+      }
     });
   }
 
@@ -80,7 +102,7 @@ export class ClienteComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', {
+        this._snackBar.open('Cliente eliminado correctamente', 'Cerrar', {
           duration: 3000,
         });
       }

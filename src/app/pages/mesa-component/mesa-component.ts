@@ -12,13 +12,13 @@ import { MesaDeleteDialogComponent } from './mesa-delete-dialog-component/mesa-d
 
 @Component({
   selector: 'app-mesa-component',
+  standalone: true,
   imports: [MaterialModule],
   templateUrl: './mesa-component.html',
-  styleUrl: './mesa-component.css',
+  styleUrls: ['./mesa-component.css'],
 })
 export class MesaComponent {
   dataSource: MatTableDataSource<Mesa>;
-
   columnsDefinitions = [
     { def: 'id', label: 'ID', hide: false },
     { def: 'numero', label: 'Número', hide: false },
@@ -27,8 +27,8 @@ export class MesaComponent {
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private mesaService: MesaService,
@@ -37,23 +37,35 @@ export class MesaComponent {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 Intentando cargar mesas desde backend...');
+    this.loadAll();
 
+    this.mesaService.getMesaChange().subscribe({
+      next: (data) => this.createTable(data),
+      error: (err) => console.error('Error en mesaChange', err),
+    });
+  }
+
+  private loadAll() {
     this.mesaService.findAll().subscribe({
-      next: (data) => {
-        console.log('✅ Datos recibidos desde backend:', data);
-        this.createTable(data);
-      },
+      next: (data) => this.createTable(data),
       error: (err) => {
-        console.error('❌ Error al obtener mesas:', err);
+        this._snackBar.open('Error al cargar mesas', 'Cerrar', { duration: 3000 });
       },
     });
   }
 
   createTable(data: Mesa[]) {
-    this.dataSource = new MatTableDataSource(data);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource = new MatTableDataSource(data || []);
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+
+    this.dataSource.filterPredicate = (data: Mesa, filter: string) => {
+      const f = filter.trim().toLowerCase();
+      const texto = `${data.id} ${data.numero} ${data.ubicacion} ${data.estado}`.toLowerCase();
+      return texto.includes(f);
+    };
   }
 
   getDisplayedColumns() {
@@ -61,13 +73,30 @@ export class MesaComponent {
   }
 
   applyFilter(e: any) {
-    this.dataSource.filter = e.target.value.trim();
+    const filterValue = (e.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
   }
 
   openDialog(mesa?: Mesa) {
-    this._dialog.open(MesaDialogComponent, {
+    const dialogRef = this._dialog.open(MesaDialogComponent, {
       width: '750px',
       data: mesa,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'create') {
+        this._snackBar.open('Mesa creada correctamente', 'Cerrar', { duration: 2500 });
+      } else if (result === 'edit') {
+        this._snackBar.open('Mesa editada correctamente', 'Cerrar', { duration: 2500 });
+      }
+
+      if (result) {
+        this.mesaService.findAll().subscribe({
+          next: (data) => this.createTable(data),
+          error: (err) => console.error('Error al recargar mesas', err),
+        });
+      }
     });
   }
 
@@ -79,8 +108,12 @@ export class MesaComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this._snackBar.open('Mesa eliminada correctamente', 'Cerrar', {
-          duration: 3000,
+        this.mesaService.findAll().subscribe({
+          next: (data) => {
+            this.createTable(data);
+            this._snackBar.open('Mesa eliminada correctamente', 'Cerrar', { duration: 3000 });
+          },
+          error: (err) => console.error('Error al recargar mesas tras eliminación', err),
         });
       }
     });

@@ -1,78 +1,87 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { Usuario } from '../../../model/usuario';
 import { UsuarioService } from '../../../services/usuario-service';
-import { switchMap } from 'rxjs';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { Rol } from '../../../model/rol';
 import { RolService } from '../../../services/rol-service';
-import { CommonModule } from '@angular/common';
+import { Rol } from '../../../model/rol';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-dialog',
+  standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatDialogModule,
+    MatButtonModule,
     MatFormFieldModule,
-    MatToolbarModule,
-    MatSelectModule,
-    FormsModule,
     MatInputModule,
-    MatButtonModule,],
+    MatSelectModule,
+    MatIconModule
+  ],
   templateUrl: './usuario-dialog-component.html',
-  styleUrl: './usuario-dialog-component.css',
+  styleUrls: ['./usuario-dialog-component.css']
 })
 export class UsuarioDialogComponent {
-  usuario: Usuario;
+
+  form: FormGroup;
   roles: Rol[] = [];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) private data: Usuario,
-    private _diajogRef: MatDialogRef<UsuarioDialogComponent>,
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     private usuarioService: UsuarioService,
-    private rolService: RolService
-  ) {}  
+    private rolService: RolService,
+    @Inject(MAT_DIALOG_DATA) public data: Usuario
+  ) {}
 
   ngOnInit(): void {
-    this.usuario = this.data ? { ...this.data } : new Usuario();
+    this.form = this.fb.group({
+      id: [this.data?.id],
+      nombre: [this.data?.nombre || '', [Validators.required, Validators.minLength(3)]],
+      correo: [this.data?.correo || '', [Validators.required, Validators.email]],
+      contrasena: [this.data?.contrasena || '', [Validators.required, Validators.minLength(6)]],
+      rol: [this.data?.rol || null, Validators.required],
+    });
 
-    // 🔽 Cargar roles desde el backend
     this.rolService.findAll().subscribe({
-      next: (data) => (this.roles = data),
-      error: (err) => console.error('Error al cargar roles', err),
+      next: (r) => (this.roles = r),
     });
   }
 
   operate() {
-    if (this.usuario != null && this.usuario.id > 0) {
-      this.usuarioService
-        .update(this.usuario.id, this.usuario)
-        .pipe(switchMap(() => this.usuarioService.findAll()))
-        .subscribe((data) => {
-          this.usuarioService.setUsuarioChange(data);
-          this.usuarioService.setMessageChange('SUPPLIER UPDATED!');
-        });
-
-        this.close();
-    } else {
-      this.usuarioService
-        .save(this.usuario)
-        .pipe(switchMap(() => this.usuarioService.findAll()))
-        .subscribe((data) => {
-          this.usuarioService.setUsuarioChange(data);
-          this.usuarioService.setMessageChange('SUPPLIER CREATED!');
-        });
-
-        this.close();
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
+
+    const usuario: Usuario = this.form.value;
+
+    const operacion = usuario.id
+      ? this.usuarioService.update(usuario.id, usuario)
+      : this.usuarioService.save(usuario);
+
+    operacion.pipe(
+      switchMap(() => this.usuarioService.findAll())
+    ).subscribe({
+      next: (data) => {
+        this.usuarioService.setUsuarioChange(data);
+        this.usuarioService.setMessageChange(
+          usuario.id ? 'Usuario editado correctamente' : 'Usuario creado correctamente'
+        );
+        this.dialogRef.close(usuario.id ? 'edit' : 'create');
+      },
+    });
   }
 
   close() {
-    this._diajogRef.close();
+    this.dialogRef.close();
   }
 }

@@ -1,46 +1,54 @@
 import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 import { Cliente } from '../../../model/cliente';
 import { Usuario } from '../../../model/usuario';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ClienteService } from '../../../services/cliente-service';
 import { UsuarioService } from '../../../services/usuario-service';
 import { switchMap } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-cliente-dialog',
+  standalone: true,
   imports: [
     CommonModule,
+    ReactiveFormsModule, 
     MatDialogModule,
     MatFormFieldModule,
     MatToolbarModule,
     MatSelectModule,
-    FormsModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './cliente-dialog-component.html',
-  styleUrl: './cliente-dialog-component.css',
+  styleUrls: ['./cliente-dialog-component.css'],
 })
 export class ClienteDialogComponent {
-  cliente: Cliente;
+  form: FormGroup;
   usuarios: Usuario[] = [];
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) private data: Cliente,
-    private _diajogRef: MatDialogRef<ClienteDialogComponent>,
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<ClienteDialogComponent>,
     private clienteService: ClienteService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    @Inject(MAT_DIALOG_DATA) public data: Cliente
   ) {}
 
   ngOnInit(): void {
-    this.cliente = this.data ? { ...this.data } : new Cliente();
+    this.form = this.fb.group({
+      telefono: [this.data?.telefono || '', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      direccion: [this.data?.direccion || '', [Validators.required, Validators.minLength(5)]],
+      usuario: [this.data?.usuario || null, Validators.required],
+    });
 
     this.usuarioService.findAll().subscribe({
       next: (data) => (this.usuarios = data),
@@ -49,30 +57,35 @@ export class ClienteDialogComponent {
   }
 
   operate() {
-    if (this.cliente != null && this.cliente.id > 0) {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const cliente: Cliente = { ...this.data, ...this.form.value };
+
+    if (cliente.id > 0) {
       this.clienteService
-        .update(this.cliente.id, this.cliente)
+        .update(cliente.id, cliente)
         .pipe(switchMap(() => this.clienteService.findAll()))
         .subscribe((data) => {
           this.clienteService.setClienteChange(data);
-          this.clienteService.setMessageChange('CLIENTE UPDATED!');
+          this.clienteService.setMessageChange('CLIENTE ACTUALIZADO!');
+          this.close(true);
         });
-
-      this.close();
     } else {
       this.clienteService
-        .save(this.cliente)
+        .save(cliente)
         .pipe(switchMap(() => this.clienteService.findAll()))
         .subscribe((data) => {
           this.clienteService.setClienteChange(data);
-          this.clienteService.setMessageChange('CLIENTE CREATED!');
+          this.clienteService.setMessageChange('CLIENTE CREADO!');
+          this.close(true);
         });
-
-      this.close();
     }
   }
 
-  close() {
-    this._diajogRef.close();
+  close(result = false) {
+    this.dialogRef.close(result);
   }
 }
