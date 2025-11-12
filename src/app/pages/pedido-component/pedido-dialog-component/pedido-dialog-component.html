@@ -1,0 +1,76 @@
+<div class="pedido-dialog-container">
+  <mat-toolbar color="primary">
+    <span>{{ pedido.idPedido ? 'Editar Pedido #' + pedido.idPedido : 'Nuevo Pedido' }}</span>
+  </mat-toolbar>
+
+  <mat-dialog-content class="p-4">
+    <!-- Cliente -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Cliente</mat-label>
+      <mat-select [(ngModel)]="pedido.cliente" [compareWith]="compareCliente" required>
+        <mat-option *ngFor="let c of clientes" [value]="c">
+          {{ c.usuario?.nombre || 'Cliente sin nombre' }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Mesa -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Mesa</mat-label>
+      <mat-select [(ngModel)]="pedido.mesa" [compareWith]="compareMesa" required>
+        <mat-option *ngFor="let m of mesas" [value]="m">{{ m.numero }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Usuario -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Atendido por (Usuario)</mat-label>
+      <mat-select [(ngModel)]="pedido.usuario" [compareWith]="compareUsuario" required>
+        <mat-option *ngFor="let u of usuarios" [value]="u">{{ u.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Fecha -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Fecha y Hora</mat-label>
+      <input
+        matInput
+        type="datetime-local"
+        [(ngModel)]="fechaHoraLocal"
+        name="fecha"
+        required
+      />
+    </mat-form-field>
+
+    <!-- Estado -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Estado</mat-label>
+      <mat-select [(ngModel)]="pedido.estado" required>
+        <mat-option value="PENDIENTE">Pendiente</mat-option>
+        <mat-option value="CONFIRMADA">Confirmada</mat-option>
+        <mat-option value="PREPARACION">En PreparaciÃ³n</mat-option>
+        <mat-option value="COMPLETADA">Completada</mat-option>
+        <mat-option value="CANCELADA">Cancelada</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="flex justify-end gap-2 p-4">
+    <button
+      mat-stroked-button
+      color="warn"
+      (click)="cancel()"
+    >
+      Cancelar
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="save()"
+      [disabled]="!pedido.cliente || !pedido.mesa || !pedido.usuario || !fechaHoraLocal || !pedido.estado"
+    >
+      Guardar
+    </button>
+  </mat-dialog-actions>
+</div>

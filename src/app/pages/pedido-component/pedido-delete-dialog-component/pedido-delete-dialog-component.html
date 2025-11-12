@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Confirmar eliminación</h2>
+
+<mat-dialog-content>
+  ¿Estás seguro de que deseas eliminar del pedido de
+  <strong>{{ data.cliente?.usuario.nombre }}</strong> para la fecha
+  <strong>{{ data.fecha | date: 'dd/MM/yyyy HH:mm' }}</strong>?
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" (click)="confirmDelete()">Eliminar</button>
+  <button mat-button (click)="cancel()">Cancelar</button>
+</mat-dialog-actions>
