@@ -100,10 +100,10 @@ export class PedidoDialogComponent {
     }
 
     this.clienteService.findAll().subscribe((clients) => {
-      this.clientes = clients.filter((c) => c.usuario?.rol?.nombre?.toUpperCase() === 'CLIENTE');
+      //this.clientes = clients.filter((c) => c.usuario?.rol?.nombre?.toUpperCase() === 'CLIENTE');
     });
     this.usuarioService.findAll().subscribe((users) => {
-      this.meseros = users.filter((u) => u.rol?.nombre?.toUpperCase() === 'MESERO');
+      //this.meseros = users.filter((u) => u.rol?.nombre?.toUpperCase() === 'MESERO');
     });
     this.mesaService.findAll().subscribe((data) => (this.mesas = data));
     this.productoService.findAll().subscribe((data) => (this.productos = data));
@@ -137,7 +137,7 @@ export class PedidoDialogComponent {
     if (!this.productoSeleccionado || this.cantidadSeleccionada <= 0) return;
 
     const detalle = new DetallePedido();
-    detalle.producto = this.productoSeleccionado;
+    //detalle.producto = this.productoSeleccionado;
     detalle.cantidad = this.cantidadSeleccionada;
     detalle.subtotal = this.cantidadSeleccionada * (this.productoSeleccionado.precio ?? 0);
 

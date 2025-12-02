@@ -35,19 +35,6 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Inventario</mat-label>
-      <mat-select
-        [(ngModel)]="producto.inventario"
-        [compareWith]="compareInventario"
-        name="inventario"
-      >
-        <mat-option *ngFor="let i of inventarios" [value]="i">
-          {{ i.nombre }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Descripción</mat-label>
       <textarea
         matInput

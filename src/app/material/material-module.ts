@@ -6,17 +6,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 import { MatSelectModule } from '@angular/material/select';   
 import { MatOptionModule } from '@angular/material/core';     
 
-
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -39,9 +39,9 @@ import { MatCardModule } from '@angular/material/card';
     MatSelectModule,  
     MatOptionModule,   
     MatCardModule, 
-
-
     MatDialogModule,
+    ReactiveFormsModule,
+    FormsModule,
   ]
 })
 export class MaterialModule { }

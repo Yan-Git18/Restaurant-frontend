@@ -25,7 +25,6 @@ export class ProductoComponent {
     { def: 'nombre', label: 'Nombre', hide: false },
     { def: 'precio', label: 'Precio', hide: false },
     { def: 'categoria', label: 'Categoría', hide: false },
-    { def: 'inventario', label: 'Inventario', hide: false },
     { def: 'stockActual', label: 'Stock', hide: false },
     { def: 'descripcion', label: 'Descripción', hide: false },
     { def: 'actions', label: 'Acciones', hide: false },
@@ -68,9 +67,8 @@ export class ProductoComponent {
     this.dataSource.filterPredicate = (data: Producto, filter: string) => {
       const f = filter.trim().toLowerCase();
       const categoria = data.categoria?.nombre ?? '';
-      const inventario = data.inventario?.nombre ?? '';
       const texto =
-       `${data.id} ${data.nombre} ${data.precio} ${categoria} ${inventario} ${data.stockActual} ${data.descripcion}`.toLowerCase();
+       `${data.id} ${data.nombre} ${data.precio} ${categoria} ${data.stockActual} ${data.descripcion}`.toLowerCase();
       return texto.includes(f);
     };
   }

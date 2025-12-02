@@ -5,5 +5,5 @@ export class Usuario{
     nombre: string;
     correo: string;
     contrasena: string;
-    rol: Rol;    
+    roles: Rol[]; 
 }

@@ -11,7 +11,8 @@ import { Usuario } from '../../../model/usuario';
 import { UsuarioService } from '../../../services/usuario-service';
 import { RolService } from '../../../services/rol-service';
 import { Rol } from '../../../model/rol';
-import { switchMap } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-usuario-dialog',
@@ -24,35 +25,42 @@ import { switchMap } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './usuario-dialog-component.html',
-  styleUrls: ['./usuario-dialog-component.css']
+  styleUrls: ['./usuario-dialog-component.css'],
 })
 export class UsuarioDialogComponent {
-
-  form: FormGroup;
+  form!: FormGroup;
   roles: Rol[] = [];
+  selectedRoleIds: number[] = [];
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<UsuarioDialogComponent>,
     private usuarioService: UsuarioService,
     private rolService: RolService,
-    @Inject(MAT_DIALOG_DATA) public data: Usuario
+    @Inject(MAT_DIALOG_DATA) public data?: Usuario
   ) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      id: [this.data?.id],
+      id: [this.data?.id || null],
       nombre: [this.data?.nombre || '', [Validators.required, Validators.minLength(3)]],
       correo: [this.data?.correo || '', [Validators.required, Validators.email]],
-      contrasena: [this.data?.contrasena || '', [Validators.required, Validators.minLength(6)]],
-      rol: [this.data?.rol || null, Validators.required],
+      contrasena: [
+        '',
+        this.data?.id ? [Validators.minLength(6)] : [Validators.required, Validators.minLength(6)],
+      ],
     });
 
     this.rolService.findAll().subscribe({
-      next: (r) => (this.roles = r),
+      next: (r) => {
+        this.roles = r;
+        if (this.data?.roles) {
+          this.selectedRoleIds = this.data.roles.map((rr) => rr.id);
+        }
+      },
     });
   }
 
@@ -62,21 +70,32 @@ export class UsuarioDialogComponent {
       return;
     }
 
-    const usuario: Usuario = this.form.value;
+    const formValue = this.form.value;
+    const usuarioToSend: any = {
+      id: formValue.id,
+      nombre: formValue.nombre,
+      correo: formValue.correo,
+      roles: this.selectedRoleIds.map((id) => ({ id } as Rol)),
+    };
 
-    const operacion = usuario.id
-      ? this.usuarioService.update(usuario.id, usuario)
-      : this.usuarioService.save(usuario);
+    if (formValue.contrasena && formValue.contrasena.trim().length > 0) {
+      usuarioToSend.contrasena = formValue.contrasena;
+    }
 
-    operacion.pipe(
-      switchMap(() => this.usuarioService.findAll())
-    ).subscribe({
+    const operacion = usuarioToSend.id
+      ? this.usuarioService.update(usuarioToSend.id, usuarioToSend)
+      : this.usuarioService.save(usuarioToSend);
+
+    operacion.pipe(switchMap(() => this.usuarioService.findAll())).subscribe({
       next: (data) => {
         this.usuarioService.setUsuarioChange(data);
         this.usuarioService.setMessageChange(
-          usuario.id ? 'Usuario editado correctamente' : 'Usuario creado correctamente'
+          usuarioToSend.id ? 'Usuario editado correctamente' : 'Usuario creado correctamente'
         );
-        this.dialogRef.close(usuario.id ? 'edit' : 'create');
+        this.dialogRef.close(usuarioToSend.id ? 'edit' : 'create');
+      },
+      error: (err) => {
+        console.error('Error operacion usuario', err);
       },
     });
   }

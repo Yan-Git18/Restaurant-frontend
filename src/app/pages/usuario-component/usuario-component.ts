@@ -18,12 +18,12 @@ import { MaterialModule } from '../../material/material-module';
   styleUrls: ['./usuario-component.css'],
 })
 export class UsuarioComponent {
-  dataSource: MatTableDataSource<Usuario>;
+  dataSource = new MatTableDataSource<Usuario>([]);
   columnsDefinitions = [
     { def: 'id', label: 'ID', hide: true },
     { def: 'nombre', label: 'Nombre', hide: false },
     { def: 'correo', label: 'Correo', hide: false },
-    { def: 'rol', label: 'Rol', hide: false },
+    { def: 'roles', label: 'Roles', hide: false },
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
@@ -61,13 +61,14 @@ export class UsuarioComponent {
   createTable(data: Usuario[]) {
     this.dataSource = new MatTableDataSource(data || []);
     setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      if (this.paginator) this.dataSource.paginator = this.paginator;
+      if (this.sort) this.dataSource.sort = this.sort;
     });
 
     this.dataSource.filterPredicate = (data: Usuario, filter: string) => {
       const f = filter.trim().toLowerCase();
-      const texto = `${data.nombre} ${data.correo} ${data.rol?.nombre}`.toLowerCase();
+      const roles = data.roles?.map((r) => r.nombre).join(' ') ?? '';
+      const texto = `${data.nombre} ${data.correo} ${roles}`.toLowerCase();
       return texto.includes(f);
     };
   }
@@ -82,10 +83,10 @@ export class UsuarioComponent {
     if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
   }
 
-  openDialog(usuario?: Usuario) {
+  openDialog(usuario?: Usuario) {    const copy = usuario ? JSON.parse(JSON.stringify(usuario)) : undefined;
     const dialogRef = this._dialog.open(UsuarioDialogComponent, {
       width: '750px',
-      data: usuario,
+      data: copy,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -96,9 +97,7 @@ export class UsuarioComponent {
       }
 
       if (result) {
-        this.usuarioService.findAll().subscribe({
-          next: (data) => this.createTable(data),
-        });
+        this.loadAll();
       }
     });
   }
@@ -111,13 +110,13 @@ export class UsuarioComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.usuarioService.findAll().subscribe({
-          next: (data) => {
-            this.createTable(data);
-            this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', { duration: 3000 });
-          },
-        });
+        this.loadAll();
+        this._snackBar.open('Usuario eliminado correctamente', 'Cerrar', { duration: 3000 });
       }
     });
+  }
+
+  getRolesAsString(usuario: Usuario): string {
+    return usuario.roles?.map((r) => r.nombre).join(', ') ?? '';
   }
 }

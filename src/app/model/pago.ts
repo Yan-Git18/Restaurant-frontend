@@ -1,9 +1,7 @@
-import { Venta } from "./venta";
-
-export class Pago{
-    idPago: number;
-    metodo: string;
-    monto: number;
-    venta: Venta;
-    fechaPago: Date;
+export class Pago {
+  id: number;           
+  metodo: string;
+  monto: number;
+  fechaPago: Date;
+  ventaId: number;    
 }

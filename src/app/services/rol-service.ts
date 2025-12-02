@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment.development';
 import { Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RolService extends GenericService<Rol> {
   private rolChange = new Subject<Rol[]>();

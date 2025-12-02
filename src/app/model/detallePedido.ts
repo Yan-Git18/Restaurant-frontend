@@ -1,10 +1,9 @@
-import { Pedido } from "./pedido";
-import { Producto } from "./producto";
+export class DetallePedido {
+  id: number;
+  cantidad: number;
+  subtotal: number;
 
-export class DetallePedido{
-    id: number;
-    cantidad: number;
-    subtotal: number;
-    pedido: Pedido;
-    producto: Producto;
+  productoId: number;
+  productoNombre: string;
+  productoPrecio: number;
 }

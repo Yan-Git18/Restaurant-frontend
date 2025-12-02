@@ -15,10 +15,8 @@ import { switchMap } from 'rxjs';
 
 import { Producto } from '../../../model/producto';
 import { Categoria } from '../../../model/categoria';
-import { Inventario } from '../../../model/inventario';
 import { ProductoService } from '../../../services/producto-service';
 import { CategoriaService } from '../../../services/categoria-service';
-import { InventarioService } from '../../../services/inventario-service';
 
 @Component({
   selector: 'app-producto-dialog',
@@ -39,14 +37,12 @@ import { InventarioService } from '../../../services/inventario-service';
 export class ProductoDialogComponent implements OnInit {
   producto: Producto = new Producto();
   categorias: Categoria[] = [];
-  inventarios: Inventario[] = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: Producto,
     private _dialogRef: MatDialogRef<ProductoDialogComponent>,
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
-    private inventarioService: InventarioService
   ) {}
 
   ngOnInit(): void {
@@ -57,11 +53,6 @@ export class ProductoDialogComponent implements OnInit {
     this.categoriaService.findAll().subscribe({
       next: (data) => (this.categorias = data),
       error: () => (this.categorias = []),
-    });
-
-    this.inventarioService.findAll().subscribe({
-      next: (data) => (this.inventarios = data),
-      error: () => (this.inventarios = []),
     });
   }
 
@@ -99,9 +90,5 @@ export class ProductoDialogComponent implements OnInit {
 
   compareCategoria(c1: Categoria, c2: Categoria): boolean {
     return c1 && c2 ? c1.id === c2.id : c1 === c2;
-  }
-
-  compareInventario(i1: Inventario, i2: Inventario): boolean {
-    return i1 && i2 ? i1.id === i2.id : i1 === i2;
   }
 }
