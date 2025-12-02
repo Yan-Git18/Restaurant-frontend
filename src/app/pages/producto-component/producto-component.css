@@ -1,214 +1,47 @@
-/* === CONTENEDOR PRINCIPAL === */
-.table-container {
-  padding: 24px;
-  background-color: #f9fafb;
-  min-height: calc(100vh - 64px);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
-  max-width: 1500px;
-}
-
-/* === CABECERA === */
-.table-header {
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  border: 1px solid #e5e7eb;
-}
-
-.table-title {
-  display: flex;
-  align-items: center;
-  margin: 0 0 16px 0;
-  font-size: 22px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.title-icon {
-  margin-right: 10px;
-  color: #2563eb;
-  font-size: 26px;
-}
-
-/* === ACCIONES DEL ENCABEZADO === */
-.header-actions {
+.header-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-/* Campo de filtro */
-.filter-field {
-  flex: 1;
-  min-width: 280px;
-}
-
-.filter-field mat-icon {
-  color: #6b7280;
-}
-
-/* Botón agregar */
-.add-button {
-  background-color: #2563eb;
+  padding: 18px;
+  background: linear-gradient(90deg, #23395d, #3b568f);
   color: white;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  box-shadow: none;
-  border-radius: 6px;
-  transition: background-color 0.25s ease;
+  border-radius: 12px;
+  margin-bottom: 20px;
 }
 
-.add-button:hover {
-  background-color: #1d4ed8;
-}
-
-/* === TABLA === */
-.table-wrapper {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.styled-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Encabezados */
-.header-row {
-  background-color: #f3f4f6;
-}
-
-.header-row th {
-  color: #374151;
-  font-weight: 600;
-  font-size: 14px;
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-/* Filas de datos */
-.data-row {
-  transition: background-color 0.2s ease;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.data-row:hover {
-  background-color: #f9fafb;
-}
-
-.data-row td {
-  padding: 14px 16px;
-  color: #1f2937;
-  font-size: 14px;
-}
-
-/* Badge de ID */
-.id-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  background: #e0e7ff;
-  color: #1e3a8a;
-  border-radius: 6px;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-/* Nombre del rol */
-.role-name {
-  font-weight: 500;
-}
-
-/* === BOTONES DE ACCIÓN === */
-.action-buttons {
+.stats-card {
   display: flex;
-  gap: 8px;
-}
-
-.action-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  box-shadow: none;
-}
-
-.edit-btn {
-  background-color: #3b82f6;
-}
-
-.edit-btn:hover {
-  background-color: #2563eb;
-}
-
-.delete-btn {
-  background-color: #ef4444;
-}
-
-.delete-btn:hover {
-  background-color: #dc2626;
-}
-
-.action-btn mat-icon {
-  font-size: 18px;
-  color: white;
-}
-
-/* === SIN DATOS === */
-.no-data-row {
-  height: 160px;
-}
-
-.no-data {
-  text-align: center;
-  color: #9ca3af;
-  padding: 30px;
-}
-
-.no-data mat-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-  opacity: 0.7;
-}
-
-/* === PAGINADOR === */
-.styled-paginator {
+  align-items: center;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 8px 12px;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  gap: 15px;
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 768px) {
-  .table-container {
-    padding: 16px;
-  }
+.stats-card .icon {
+  font-size: 45px;
+  color: #2a4e96;
+}
 
-  .table-header {
-    padding: 16px;
-  }
+.count {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2a4e96;
+}
 
-  .table-title {
-    font-size: 18px;
-  }
+.table-container {
+  padding: 15px;
+  border-radius: 12px;
+  background: white;
+}
 
-  .header-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
+.filter-field {
+  width: 300px;
+  margin-bottom: 15px;
+}
 
-  .filter-field {
-    min-width: 100%;
-  }
-
-  .add-button {
-    width: 100%;
-  }
+.low {
+  color: red;
+  font-weight: bold;
 }

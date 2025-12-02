@@ -1,116 +1,93 @@
-mat-toolbar {
-  font-size: 18px;
-  font-weight: 600;
-  border-radius: 6px 6px 0 0;
+.dialog-crear {
+  width: 1100px !important;
+  max-width: 95vw !important;
+
+  background: white;
+  border-radius: 12px;
+  padding-bottom: 12px;
 }
 
-.form-container {
+
+::ng-deep .mat-dialog-container {
+  max-width: none !important;
+  width: auto !important;
+}
+
+
+.contenido {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px;
+  gap: 18px;
 }
 
 mat-form-field {
-  width: 100%;
+  width: 100% !important;
 }
 
-hr {
-  margin: 10px 0;
-  border: none;
-  border-top: 1px solid #ddd;
+
+.fila-dos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
-table {
-  width: 100%;
-  margin-top: 12px;
+.fila-uno.cliente-full {
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
-.mat-column-producto,
-.mat-column-cantidad,
-.mat-column-subtotal,
-.mat-column-acciones {
-  padding: 8px;
+.detalles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
 }
 
-th.mat-header-cell {
-  background-color: #f3f3f3;
+@media (max-width: 900px) {
+  .detalles-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detalle-item {
+  display: grid;
+  grid-template-columns: 2.5fr 80px 110px 40px;
+  gap: 14px;
+
+  align-items: center;
+
+  padding: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 10px;
+  background: #fafafa;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.producto-field {
+  width: 100% !important;
+}
+
+.cantidad-field {
+  width: 80px !important;
+}
+
+
+.subtotal {
+  width: 110px;
+  text-align: right;
+  font-size: 15px;
   font-weight: bold;
-  text-transform: uppercase;
 }
 
-td.mat-cell {
-  vertical-align: middle;
+.detalle-item button {
+  width: 40px;
+  height: 40px;
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 4px;
-}
 
-.flex {
-  display: flex;
-}
-
-.gap-2 {
-  gap: 8px;
-}
-
-.items-end {
-  align-items: flex-end;
-}
-
-.justify-end {
-  justify-content: flex-end;
-}
-
-.mt-2 {
-  margin-top: 8px;
-}
-
-.mt-4 {
-  margin-top: 16px;
-}
-
-.w-full {
-  width: 100%;
-}
-
-.mat-elevation-z2 {
-  border-radius: 8px;
-}
-
-strong {
-  font-size: 16px;
-  color: #333;
-}
-
-button[mat-flat-button] mat-icon {
-  margin-right: 4px;
-}
-
-.mat-dialog-content {
-  max-height: 80vh;
-  overflow: auto;
-}
-
-.mat-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-button[mat-button] {
-  min-width: 100px;
-}
-
-button[color="primary"] {
-  background-color: #1976d2;
-  color: #fff;
-}
-
-button[color="warn"] {
-  background-color: #d32f2f;
-  color: #fff;
+.total {
+  text-align: right;
+  margin-top: 12px;
+  font-size: 22px;
+  font-weight: bold;
 }

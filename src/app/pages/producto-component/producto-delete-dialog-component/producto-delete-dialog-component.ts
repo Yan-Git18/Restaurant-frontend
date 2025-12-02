@@ -1,15 +1,16 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
-import { Producto } from '../../../model/producto';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProductoService } from '../../../services/producto-service';
+import { Producto } from '../../../model/producto';
+import { MaterialModule } from '../../../material/material-module';
 
 @Component({
-  selector: 'app-producto-delete-dialog-component',
-  imports: [MatDialogContent, MatDialogActions],
+  selector: 'app-producto-delete',
   templateUrl: './producto-delete-dialog-component.html',
-  styleUrl: './producto-delete-dialog-component.css',
+  imports: [MaterialModule],
 })
 export class ProductoDeleteDialogComponent {
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: Producto,
     private dialogRef: MatDialogRef<ProductoDeleteDialogComponent>,
@@ -17,18 +18,11 @@ export class ProductoDeleteDialogComponent {
   ) {}
 
   confirmDelete() {
-    this.productoService.delete(this.data.id).subscribe({
-      next: () => {
-        this.productoService.findAll().subscribe((data) => {
-          this.productoService.setProductoChange(data);
-          this.productoService.setMessageChange('PRODUCTO ELIMINADO!');
-          this.dialogRef.close(true);
-        });
-      },
-      error: (err) => {
-        console.error('❌ Error al eliminar producto', err);
-        this.dialogRef.close(false);
-      },
+    this.productoService.delete(this.data.id).subscribe(() => {
+      this.productoService.findAll().subscribe(list => {
+        this.productoService.setProductoChange(list);
+        this.dialogRef.close(true);
+      });
     });
   }
 

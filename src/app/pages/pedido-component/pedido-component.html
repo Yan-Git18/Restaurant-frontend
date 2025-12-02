@@ -1,79 +1,81 @@
-<div class="table-container">
-  <div class="table-header">
-    <h2 class="table-title">
-      <mat-icon class="title-icon">receipt</mat-icon>
-      Gestión de Pedidos
-    </h2>
-
-    <div class="header-actions">
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>Buscar pedido</mat-label>
-        <input matInput (keyup)="applyFilter($event)" placeholder="Ej. Cliente o Estado" />
-        <mat-icon matPrefix>search</mat-icon>
-      </mat-form-field>
-
-      <button mat-flat-button color="primary" class="add-button" (click)="openDialog()">
-        <mat-icon>add</mat-icon>
-        Nuevo Pedido
-      </button>
-    </div>
+<div class="header-card mat-elevation-z3">
+  <div>
+    <h2>Pedidos</h2>
+    <p>Lista y gestión de pedidos</p>
   </div>
+  <button mat-raised-button color="primary" (click)="openCreateDialog()">
+    <mat-icon>add</mat-icon> Nuevo Pedido
+  </button>
+</div>
 
-  <div class="table-wrapper mat-elevation-z2">
-    <table mat-table [dataSource]="dataSource" matSort>
+<div class="table-container mat-elevation-z4">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
-      </ng-container>
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+      <td mat-cell *matCellDef="let row">{{ row.fecha | date : 'short' }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="estado">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-        <td mat-cell *matCellDef="let row">{{ row.estado }}</td>
-      </ng-container>
+    <ng-container matColumnDef="mesa">
+      <th mat-header-cell *matHeaderCellDef>Mesa</th>
+      <td mat-cell *matCellDef="let row">Mesa {{ row.mesa?.numero }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="fecha">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-        <td mat-cell *matCellDef="let row">{{ row.fecha | date:'short' }}</td>
-      </ng-container>
+    <ng-container matColumnDef="cliente">
+      <th mat-header-cell *matHeaderCellDef>Cliente</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.cliente?.usuario?.nombre || 'Sin cliente' }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="cliente">
-        <th mat-header-cell *matHeaderCellDef>Cliente</th>
-        <td mat-cell *matCellDef="let row">{{ row.cliente?.usuario?.nombre }}</td>
-      </ng-container>
+    <ng-container matColumnDef="usuario">
+      <th mat-header-cell *matHeaderCellDef>Mesero</th>
+      <td mat-cell *matCellDef="let row">
+        {{ row.usuario?.nombre }}
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="mesa">
-        <th mat-header-cell *matHeaderCellDef>Mesa</th>
-        <td mat-cell *matCellDef="let row">{{ row.mesa?.numero }}</td>
-      </ng-container>
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let row">
+        <mat-form-field appearance="outline" class="estado-select">
+          <mat-select [value]="row.estado" (selectionChange)="onEstadoChange(row, $event.value)">
+            <mat-option value="PENDIENTE">PENDIENTE</mat-option>
+            <mat-option value="PREPARACION">PREPARACION</mat-option>
+            <mat-option value="LISTO">LISTO</mat-option>
+            <mat-option value="ENTREGADO">ENTREGADO</mat-option>
+            <mat-option value="FACTURADO">FACTURADO</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </td>
+    </ng-container>
 
-      <ng-container matColumnDef="usuario">
-        <th mat-header-cell *matHeaderCellDef>Usuario</th>
-        <td mat-cell *matCellDef="let row">{{ row.usuario?.correo }}</td>
-      </ng-container>
+    <ng-container matColumnDef="total">
+      <th mat-header-cell *matHeaderCellDef>Total</th>
+      <td mat-cell *matCellDef="let row">S/ {{ getTotal(row.detalles) | number : '1.2-2' }}</td>
+    </ng-container>
 
-      <ng-container matColumnDef="actions">
-  <th mat-header-cell *matHeaderCellDef>Acciones</th>
-  <td mat-cell *matCellDef="let row">
-    <div class="action-buttons">
-      <button mat-icon-button color="accent" (click)="verDetalle(row)">
-        <mat-icon>visibility</mat-icon>
-      </button>
-      <button mat-icon-button color="primary" (click)="openDialog(row)">
-        <mat-icon>edit</mat-icon>
-      </button>
-      <button mat-icon-button color="warn" (click)="openDeleteDialog(row)">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </div>
-  </td>
-</ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let row">
+        <button
+          mat-icon-button
+          color="primary"
+          matTooltip="Ver detalle"
+          (click)="openDetailDialog(row)"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </td>
+    </ng-container>
 
+    <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
+    <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()"></tr>
+  </table>
 
-      <tr mat-header-row *matHeaderRowDef="getDisplayedColumns()"></tr>
-      <tr mat-row *matRowDef="let row; columns: getDisplayedColumns()"></tr>
-    </table>
-  </div>
-
-  <mat-paginator [pageSizeOptions]="[10,25,50]" class="styled-paginator"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 </div>

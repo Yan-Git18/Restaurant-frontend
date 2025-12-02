@@ -1,0 +1,45 @@
+<div class="dialog-detalles">
+  <h2 mat-dialog-title class="title">Detalle del Pedido #{{ data.id }}</h2>
+
+  <mat-dialog-content class="content">
+    <div class="info-grid">
+      <p><strong>Fecha:</strong> {{ data.fecha | date : 'short' }}</p>
+      <p><strong>Mesa:</strong> Mesa {{ data.mesa?.numero }}</p>
+      <p><strong>Mesero:</strong> {{ data.usuario?.nombre }}</p>
+      <p><strong>Cliente:</strong> {{ data.cliente?.usuario?.nombre || 'Sin cliente' }}</p>
+      <p><strong>Estado:</strong> {{ data.estado }}</p>
+    </div>
+
+    <h3 class="section-title">Productos del Pedido</h3>
+
+    <table class="detail-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let d of data.detalles">
+          <td>{{ d.productoNombre }}</td>
+          <td>{{ d.cantidad }}</td>
+          <td>S/ {{ d.productoPrecio }}</td>
+          <td>S/ {{ d.subtotal }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="total-container">
+      <h3>
+        Total: <span>S/ {{ getTotal() }}</span>
+      </h3>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-raised-button color="primary" (click)="close()">Cerrar</button>
+  </mat-dialog-actions>
+</div>

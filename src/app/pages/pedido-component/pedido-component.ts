@@ -1,116 +1,107 @@
 import { Component, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MaterialModule } from '../../material/material-module';
 import { MatTableDataSource } from '@angular/material/table';
 import { Pedido } from '../../model/pedido';
 import { PedidoService } from '../../services/pedido-service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+
 import { PedidoDialogComponent } from './pedido-dialog-component/pedido-dialog-component';
-import { PedidoDeleteDialogComponent } from './pedido-delete-dialog-component/pedido-delete-dialog-component';
-import { MaterialModule } from '../../material/material-module';
-import { CommonModule, DatePipe } from '@angular/common';
+import { PedidoDetailsDialogComponent } from './pedido-details-dialog-component/pedido-details-dialog-component';
 
 @Component({
-  selector: 'app-pedido-component',
-  standalone: true,
-  imports: [CommonModule, MaterialModule, DatePipe],
+  selector: 'app-pedido',
+  imports: [MaterialModule, CommonModule],
   templateUrl: './pedido-component.html',
-  styleUrls: ['./pedido-component.css'],
+  styleUrl: './pedido-component.css',
 })
 export class PedidoComponent {
   dataSource: MatTableDataSource<Pedido>;
 
   columnsDefinitions = [
-    { def: 'id', label: 'ID', hide: true },
-    { def: 'estado', label: 'Estado', hide: false },
+    { def: 'id', label: 'ID', hide: false },
     { def: 'fecha', label: 'Fecha', hide: false },
-    { def: 'cliente', label: 'Cliente', hide: false },
     { def: 'mesa', label: 'Mesa', hide: false },
-    { def: 'usuario', label: 'Usuario', hide: false },
+    { def: 'cliente', label: 'Cliente', hide: false },
+    { def: 'usuario', label: 'Mesero', hide: false },
+    { def: 'estado', label: 'Estado', hide: false },
+    { def: 'total', label: 'Total', hide: false },
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     private pedidoService: PedidoService,
-    private _snackBar: MatSnackBar,
-    private _dialog: MatDialog
+    private _dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
 
-  ngOnInit(): void {
-    this.loadAll();
-    this.pedidoService.getPedidoChange().subscribe((data) => this.createTable(data));
-    this.pedidoService.getMessageChange().subscribe((msg) => {
-      if (msg) this._snackBar.open(msg, 'Cerrar', { duration: 3000 });
-    });
+  ngOnInit() {
+    this.loadData();
   }
 
-  private loadAll() {
+  loadData() {
     this.pedidoService.findAll().subscribe({
       next: (data) => this.createTable(data),
-      error: (err) => {
-        console.error('Error al cargar pedidos', err);
-        this._snackBar.open('Error al cargar pedidos', 'Cerrar', { duration: 3000 });
-      },
+      error: (err) => console.error('Error cargando pedidos', err),
     });
   }
 
   createTable(data: Pedido[]) {
-    this.dataSource = new MatTableDataSource(data || []);
-    setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
-
-    this.dataSource.filterPredicate = (data: Pedido, filter: string) => {
-      const f = filter.trim().toLowerCase();
-      const cliente = data.cliente?.usuario?.nombre ?? '';
-      const mesa = data.mesa?.numero ?? '';
-      const usuario = data.usuario?.nombre ?? '';
-      const texto = `${data.id} ${data.estado} ${data.fecha} ${cliente} ${mesa} ${usuario}`.toLowerCase();
-      return texto.includes(f);
-    };
+    this.dataSource = new MatTableDataSource(data);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   getDisplayedColumns() {
-    return this.columnsDefinitions.filter(cd => !cd.hide).map(cd => cd.def);
+    return this.columnsDefinitions.filter((c) => !c.hide).map((c) => c.def);
   }
 
-  applyFilter(e: any) {
-    const filterValue = (e.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
-  }
-
-  openDialog(pedido?: Pedido) {
+  openCreateDialog() {
     const dialogRef = this._dialog.open(PedidoDialogComponent, {
-      width: '800px',
-      data: { pedido: pedido ?? null, soloLectura: false }
+      width: '900px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadAll();
+      if (result === 'created') {
+        this._snackBar.open('Pedido registrado correctamente', 'Cerrar', { duration: 3000 });
+        this.loadData();
+      }
     });
   }
 
-  openDeleteDialog(pedido: Pedido) {
-    const dialogRef = this._dialog.open(PedidoDeleteDialogComponent, {
-      width: '400px',
+  openDetailDialog(pedido: Pedido) {
+    this._dialog.open(PedidoDetailsDialogComponent, {
+      width: '700px',
       data: pedido,
     });
+  }
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) this.loadAll();
+  onEstadoChange(pedido: Pedido, nuevoEstado: string) {
+    const prev = pedido.estado;
+    pedido.estado = nuevoEstado;
+
+    this.pedidoService.cambiarEstado(pedido.id, nuevoEstado).subscribe({
+      next: () => {
+        this._snackBar.open('Estado actualizado', 'Cerrar', { duration: 2000 });
+        this.loadData();
+      },
+      error: (err) => {
+        pedido.estado = prev;
+        this._snackBar.open(err?.error?.message || 'Error al cambiar estado', 'Cerrar', {
+          duration: 4000,
+        });
+        this.loadData();
+      },
     });
   }
 
-  verDetalle(pedido: Pedido) {
-    this._dialog.open(PedidoDialogComponent, {
-      width: '800px',
-      data: { pedido, soloLectura: true }
-    });
+  getTotal(detalles: any[]) {
+    return detalles?.reduce((t, d) => t + (d.subtotal || d.cantidad * d.producto?.precio), 0) || 0;
   }
 }

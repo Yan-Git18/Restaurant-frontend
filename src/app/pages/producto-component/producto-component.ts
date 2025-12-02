@@ -1,76 +1,78 @@
 import { Component, ViewChild } from '@angular/core';
-import { CommonModule, DecimalPipe } from '@angular/common';
 import { MaterialModule } from '../../material/material-module';
 import { MatTableDataSource } from '@angular/material/table';
 import { Producto } from '../../model/producto';
+import { Categoria } from '../../model/categoria';
 import { ProductoService } from '../../services/producto-service';
+import { CategoriaService } from '../../services/categoria-service';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProductoDialogComponent } from './producto-dialog-component/producto-dialog-component';
 import { ProductoDeleteDialogComponent } from './producto-delete-dialog-component/producto-delete-dialog-component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-producto',
-  standalone: true,
-  imports: [CommonModule, MaterialModule, DecimalPipe],
+  imports: [MaterialModule, CommonModule],
   templateUrl: './producto-component.html',
-  styleUrls: ['./producto-component.css'],
+  styleUrl: './producto-component.css',
 })
 export class ProductoComponent {
   dataSource: MatTableDataSource<Producto>;
+  categorias: Categoria[] = [];
 
   columnsDefinitions = [
+    { def: 'id', label: 'ID', hide: false },
     { def: 'nombre', label: 'Nombre', hide: false },
-    { def: 'precio', label: 'Precio', hide: false },
     { def: 'categoria', label: 'Categoría', hide: false },
+    { def: 'precio', label: 'Precio', hide: false },
     { def: 'stockActual', label: 'Stock', hide: false },
-    { def: 'descripcion', label: 'Descripción', hide: false },
     { def: 'actions', label: 'Acciones', hide: false },
   ];
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  totalStock: number = 0;
 
   constructor(
     private productoService: ProductoService,
-    private _snackBar: MatSnackBar,
-    private _dialog: MatDialog
+    private categoriaService: CategoriaService,
+    private _dialog: MatDialog,
+    private _snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.loadAll();
-    this.productoService.getProductoChange().subscribe({
-      next: (data) => this.createTable(data),
-      error: (err) => console.error('Error en productoChange', err),
+    this.loadData();
+
+    // Refresh automático
+    this.productoService.getProductoChange().subscribe((data) => {
+      this.createTable(data);
+      this.calculateStock(data);
     });
   }
 
-  private loadAll() {
-    this.productoService.findAll().subscribe({
-      next: (data) => this.createTable(data),
-      error: (err) => {
-        console.error('❌ Error al obtener productos:', err);
-        this._snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 });
-      },
+  loadData() {
+    this.productoService.findAll().subscribe((data) => {
+      this.createTable(data);
+      this.calculateStock(data);
+    });
+
+    this.categoriaService.findAll().subscribe((cats) => {
+      this.categorias = cats;
     });
   }
 
   createTable(data: Producto[]) {
-    this.dataSource = new MatTableDataSource(data || []);
-    setTimeout(() => {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+    this.dataSource = new MatTableDataSource(data);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
-    this.dataSource.filterPredicate = (data: Producto, filter: string) => {
-      const f = filter.trim().toLowerCase();
-      const categoria = data.categoria?.nombre ?? '';
-      const texto =
-       `${data.id} ${data.nombre} ${data.precio} ${categoria} ${data.stockActual} ${data.descripcion}`.toLowerCase();
-      return texto.includes(f);
-    };
+  calculateStock(data: Producto[]) {
+    this.totalStock = data.reduce((a, b) => a + b.stockActual, 0);
   }
 
   getDisplayedColumns() {
@@ -78,42 +80,28 @@ export class ProductoComponent {
   }
 
   applyFilter(e: any) {
-    const filterValue = (e.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) this.dataSource.paginator.firstPage();
+    this.dataSource.filter = e.target.value.trim().toLowerCase();
   }
 
   openDialog(producto?: Producto) {
-    const dialogRef = this._dialog.open(ProductoDialogComponent, {
-      width: '750px',
-      data: producto,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result === 'create') {
-        this._snackBar.open('Producto creado correctamente', 'Cerrar', { duration: 2500 });
-      } else if (result === 'edit') {
-        this._snackBar.open('Producto editado correctamente', 'Cerrar', { duration: 2500 });
-      }
+    this._dialog.open(ProductoDialogComponent, {
+      width: '700px',
+      data: {
+        producto,
+        categorias: this.categorias,
+      },
     });
   }
 
   openDeleteDialog(producto: Producto) {
-    const dialogRef = this._dialog.open(ProductoDeleteDialogComponent, {
+    this._dialog.open(ProductoDeleteDialogComponent, {
       width: '400px',
       data: producto,
     });
+  }
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.productoService.findAll().subscribe({
-          next: (data) => {
-            this.createTable(data);
-            this._snackBar.open('Producto eliminado correctamente', 'Cerrar', { duration: 3000 });
-          },
-          error: (err) => console.error('Error al recargar productos tras eliminación', err),
-        });
-      }
-    });
+  getCategoriaNombre(id: number): string {
+    const cat = this.categorias.find((c) => c.id === id);
+    return cat ? cat.nombre : '—';
   }
 }
