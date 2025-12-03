@@ -1,0 +1,19 @@
+.header-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px;
+  margin-bottom:12px;
+}
+.table-container{
+  padding:16px;
+}
+.filter-field{
+  width: 320px;
+  margin-bottom:12px;
+  display:block;
+}
+.full-width{
+  width:100%;
+}
+.actions button{ margin-left:8px; }

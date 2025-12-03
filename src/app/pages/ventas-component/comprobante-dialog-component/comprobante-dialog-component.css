@@ -1,0 +1,3 @@
+.form-grid{ display:flex; flex-direction:column; gap:12px; width:100%; }
+.full{ width:100%; }
+.venta-resumen{ margin-top:12px; background:#fafafa; padding:10px; border-radius:6px; }

@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Editar Menú' : 'Nuevo Menú' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Icono</mat-label>
+      <input matInput formControlName="icon" placeholder="Ej: home">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>URL</mat-label>
+      <input matInput formControlName="url" placeholder="/pages/ejemplo">
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()">Guardar</button>
+</mat-dialog-actions>

@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Generar Venta</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="form-grid">
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Seleccionar pedido</mat-label>
+      <mat-select formControlName="pedidoId">
+        <mat-option *ngFor="let p of pedidosDisponibles" [value]="p.id">
+          {{ displayPedido(p) }}
+        </mat-option>
+      </mat-select>
+      <mat-hint *ngIf="loadingPedidos">Cargando pedidos...</mat-hint>
+      <mat-error *ngIf="form.controls['pedidoId'].hasError('required')">Seleccione un pedido</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button color="warn" (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="generar()" [disabled]="form.invalid">Generar Venta</button>
+</mat-dialog-actions>

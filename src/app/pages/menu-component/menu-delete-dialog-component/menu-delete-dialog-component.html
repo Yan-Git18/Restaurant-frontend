@@ -1,0 +1,8 @@
+<mat-dialog-content>
+  ¿Deseas eliminar el menú <strong>{{ data.name }}</strong>?
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" (click)="confirmDelete()">Eliminar</button>
+  <button mat-button (click)="cancel()">Cancelar</button>
+</mat-dialog-actions>
