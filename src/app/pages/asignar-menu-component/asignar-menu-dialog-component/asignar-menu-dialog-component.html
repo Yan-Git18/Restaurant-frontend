@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>Asignar Menú al Rol {{ data.rol.nombre }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form">
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Menú</mat-label>
+      <mat-select formControlName="idMenu">
+        <mat-option *ngFor="let m of menus" [value]="m.id">
+          {{ m.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="form.invalid">
+    Asignar
+  </button>
+</mat-dialog-actions>

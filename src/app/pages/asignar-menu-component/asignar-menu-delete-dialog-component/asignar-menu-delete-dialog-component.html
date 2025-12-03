@@ -1,0 +1,12 @@
+<mat-dialog-content>
+  ¿Deseas eliminar el menú
+  <strong>{{ data.menu.name }}</strong>
+  del rol <strong>{{ data.rol.nombre }}</strong>?
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button mat-raised-button color="warn" (click)="delete()">
+    Eliminar
+  </button>
+</mat-dialog-actions>
