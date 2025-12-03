@@ -35,7 +35,6 @@ export class VentaComponent {
   ngOnInit(): void {
     this.loadVentas();
 
-    // Opcional: actualiza cuando el servicio emite cambios
     this.ventaService.getVentaChange().subscribe(() => this.loadVentas());
   }
 

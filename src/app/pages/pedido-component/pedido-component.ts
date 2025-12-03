@@ -64,7 +64,10 @@ export class PedidoComponent {
 
   openCreateDialog() {
     const dialogRef = this._dialog.open(PedidoDialogComponent, {
-      width: '900px',
+      width: '1100px',
+      maxWidth: '95vw',
+      height: 'auto',
+      autoFocus: false,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

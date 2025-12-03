@@ -9,6 +9,9 @@ import { CategoriaComponent } from './categoria-component/categoria-component';
 import { ProductoComponent } from './producto-component/producto-component';
 import { PedidoComponent } from './pedido-component/pedido-component';
 import { PanelComponent } from './panel-component/panel-component';
+import { MenuComponent } from './menu-component/menu-component';
+import { AsignarMenuComponent } from './asignar-menu-component/asignar-menu-component';
+import { VentaComponent } from './ventas-component/ventas-component';
 
 export const pagesRoutes: Routes = [
   { path: 'panel', component: PanelComponent, canActivate: [certGuard] },
@@ -20,8 +23,8 @@ export const pagesRoutes: Routes = [
   { path: 'reservas', component: ReservaComponent, canActivate: [certGuard] },
   { path: 'categorias', component: CategoriaComponent, canActivate: [certGuard] },
   { path: 'productos', component: ProductoComponent, canActivate: [certGuard] },
-  //{ path: 'menus', component: MenuComponent, canActivate: [certGuard] },
-  //{ path: 'menu-roles', component: AsignarMenuComponent, canActivate: [certGuard] },
-  //{ path: 'ventas', component: VentaComponent, canActivate: [certGuard] }
+  { path: 'menus', component: MenuComponent, canActivate: [certGuard] },
+  { path: 'menu-roles', component: AsignarMenuComponent, canActivate: [certGuard] },
+  { path: 'ventas', component: VentaComponent, canActivate: [certGuard] }
 ];
 

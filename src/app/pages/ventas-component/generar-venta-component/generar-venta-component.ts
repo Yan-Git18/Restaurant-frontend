@@ -12,7 +12,6 @@ interface PedidoDisponible {
   id: number;
   estado: string;
   cliente?: { id?: number; usuario?: any };
-  // otros campos según tu API...
 }
 
 @Component({
@@ -48,7 +47,6 @@ export class GenerarVentaComponent {
     this.http.get<PedidoDisponible[]>(`${environment.HOST}/ventas/pedidos-disponibles`)
       .subscribe({
         next: (list) => {
-          // backend ya filtra LISTO o ENTREGADO, sólo mostramos lo que llegue
           this.pedidosDisponibles = list;
           this.loadingPedidos = false;
         },
@@ -66,7 +64,6 @@ export class GenerarVentaComponent {
     const pedidoId = this.form.value.pedidoId;
     this.ventaService.generarVenta(pedidoId).subscribe({
       next: (venta) => {
-        // Devolvemos la venta creada para que el componente padre la use si lo desea
         this.dialogRef.close(venta);
       },
       error: (err) => {
@@ -81,7 +78,6 @@ export class GenerarVentaComponent {
   }
 
   displayPedido(p: PedidoDisponible) {
-    // Si tu objeto tiene cliente.nombre u otros campos
     const cliente = p?.cliente?.id ? `Cliente #${p.cliente.id}` : '';
     return `Pedido #${p.id} — ${p.estado} ${cliente}`;
   }
